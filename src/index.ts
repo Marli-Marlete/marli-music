@@ -1,8 +1,9 @@
 import express, { Express, Request, Response } from 'express';
 import * as dotenv from 'dotenv';
-import { MarliMusic } from 'bot/bot-client';
-import { BotHandler } from 'bot/bot-handler';
+
 import { YtdlSourceStream } from 'sources/ytdl-source/ytdl-source';
+import { CommandsHandler } from 'bot/commands-handler';
+import { MarliMusic } from 'bot/marli-music';
 dotenv.config();
 
 const server: Express = express();
@@ -15,7 +16,7 @@ server.get('/', (_request: Request, response: Response) => {
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const BOT_PREFIX = process.env.BOT_PREFIX;
 
-const botHandler = new BotHandler(new YtdlSourceStream());
+const botHandler = new CommandsHandler(new YtdlSourceStream());
 
 new MarliMusic(BOT_PREFIX, BOT_TOKEN, botHandler, {
 	intents: [

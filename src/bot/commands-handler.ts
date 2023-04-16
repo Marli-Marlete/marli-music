@@ -15,7 +15,7 @@ import { SourceStream } from '../sources/source-stream';
 import { startBotHooks } from './bot-hooks';
 import { PlayDlSourceStream } from '../sources/play-dl-source/play-dl.source';
 
-export class BotHandler {
+export class CommandsHandler {
 	private player: AudioPlayer;
 
 	constructor(private sourceStream?: SourceStream) {}
