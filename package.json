@@ -7,7 +7,8 @@
 	"license": "MIT",
 	"scripts": {
 		"start": "tsx src/index.ts",
-		"start:watch": "tsx watch src/index.ts"
+		"start:watch": "tsx watch src/index.ts",
+		"lint": "eslint . --fix"
 	},
 	"dependencies": {
 		"@discordjs/opus": "^0.9.0",

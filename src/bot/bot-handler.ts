@@ -36,13 +36,13 @@ export class BotHandler {
 				this.play(message, input);
 				break;
 			case 'pause':
-				this.pause(message, input);
+				this.pause(message);
 				break;
 			case 'resume':
-				this.resume(message, input);
+				this.resume(message);
 				break;
 			case 'stop':
-				this.stop(message, input);
+				this.stop(message);
 				break;
 			default:
 				message.reply(BOT_MESSAGES.INVALID_COMMAND);
@@ -69,9 +69,9 @@ export class BotHandler {
 		connection = getVoiceConnection(voiceMember.guild.id);
 		if (!connection)
 			connection = joinVoiceChannel({
+				adapterCreator: voiceMember.guild.voiceAdapterCreator,
 				channelId: voiceMember.channelId,
 				guildId: String(voiceMember.guild.id),
-				adapterCreator: voiceMember.guild.voiceAdapterCreator,
 			});
 
 		this.getPlayer();
@@ -92,19 +92,19 @@ export class BotHandler {
 			content: `${BOT_MESSAGES.CURRENT_PLAYING} ${searchResult[0].title}`,
 		});
 	}
-	public async pause(message: Message, input: string) {
+	public async pause(message: Message) {
 		this.player.pause();
 		return message.reply({
 			content: `${message.author.username} ${BOT_MESSAGES.MUSIC_PAUSED}`,
 		});
 	}
-	public async resume(message: Message, input: string) {
+	public async resume(message: Message) {
 		this.player.unpause();
 		return message.reply({
 			content: `${message.author.username} ${BOT_MESSAGES.MUSIC_RESUMED}`,
 		});
 	}
-	public async stop(message: Message, input: string) {
+	public async stop(message: Message) {
 		this.player.stop();
 		return message.reply({
 			content: `${message.author.username} ${BOT_MESSAGES.MUSIC_STOPPED}`,

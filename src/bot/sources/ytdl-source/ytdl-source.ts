@@ -9,8 +9,8 @@ export class YtdlSourceStream implements SourceStream {
 		try {
 			console.log(url);
 			const stream = ytdl(url, {
-				quality: 'highestaudio',
 				filter: 'audioonly',
+				quality: 'highestaudio',
 			});
 			if (stream) return stream;
 		} catch (e) {

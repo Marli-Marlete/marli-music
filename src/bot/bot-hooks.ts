@@ -24,7 +24,7 @@ export function startBotHooks(
 		);
 	});
 
-	connection.on(VoiceConnectionStatus.Disconnected, (oldState, newState) => {
+	connection.on(VoiceConnectionStatus.Disconnected, () => {
 		console.log('disconnect');
 		connection.destroy();
 	});

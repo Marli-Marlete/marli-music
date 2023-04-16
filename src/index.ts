@@ -2,7 +2,6 @@ import express, { Express, Request, Response } from 'express';
 import * as dotenv from 'dotenv';
 import { MarliMusic } from 'bot/bot-client';
 import { BotHandler } from 'bot/bot-handler';
-import { PlayDlSourceStream } from 'bot/sources/play-dl-source/play-dl.source';
 import { YtdlSourceStream } from 'bot/sources/ytdl-source/ytdl-source';
 dotenv.config();
 
@@ -18,7 +17,7 @@ const BOT_PREFIX = process.env.BOT_PREFIX;
 
 const botHandler = new BotHandler(new YtdlSourceStream());
 
-const marliMusic = new MarliMusic(
+new MarliMusic(
 	BOT_PREFIX,
 	BOT_TOKEN,
 	{
