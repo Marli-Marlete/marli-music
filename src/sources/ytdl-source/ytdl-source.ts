@@ -1,8 +1,9 @@
-import ytdl from 'ytdl-core';
 import { Readable } from 'node:stream';
-import { ResultAudioSearch, SourceStream } from '../source-stream';
 import yts from 'yt-search';
-import { ERRORS } from 'shared/errors';
+import ytdl from 'ytdl-core';
+
+import { ERRORS } from '../../shared/errors';
+import { ResultAudioSearch, SourceStream } from '../source-stream';
 
 export class YtdlSourceStream implements SourceStream {
 	getStream(url: string): Readable {

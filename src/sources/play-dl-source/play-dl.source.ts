@@ -1,7 +1,8 @@
-import { ResultAudioSearch, SourceStream } from '../source-stream';
 import { Readable } from 'node:stream';
 import play, { YouTubeVideo } from 'play-dl';
-import { ERRORS } from 'shared/errors';
+
+import { ERRORS } from '../../shared/errors';
+import { ResultAudioSearch, SourceStream } from '../source-stream';
 
 export class PlayDlSourceStream implements SourceStream {
 	async getStream(url: string): Promise<Readable> {

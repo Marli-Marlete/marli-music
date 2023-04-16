@@ -1,18 +1,27 @@
-import { Client, ClientOptions, Message } from 'discord.js'
+import { Client, ClientOptions, Message } from 'discord.js';
 
-import { CommandsHandler } from './commands-handler'
-import { BOT_MESSAGES } from './default-messages'
+import { CommandsHandler } from './commands-handler';
+import { BOT_MESSAGES } from './default-messages';
+
+interface BotInfo {
+	prefix: string;
+	token: string;
+}
 
 export class MarliMusic extends Client {
+	prefix: string;
+
 	constructor(
-		private prefix: string,
-		public token: string,
+		private botInfo: BotInfo,
 		private handler: CommandsHandler,
 		options?: ClientOptions,
 	) {
 		super(options);
 
-		this.login(this.token);
+		this.prefix = botInfo.prefix;
+
+		this.login(this.botInfo.token);
+
 		this.once('ready', () => {
 			console.log(this.user.username, 'ready');
 		});
@@ -56,9 +65,5 @@ export class MarliMusic extends Client {
 			default:
 				message.reply(BOT_MESSAGES.INVALID_COMMAND);
 		}
-	}
-
-	public getPrefix(): string {
-		return this.prefix;
 	}
 }
