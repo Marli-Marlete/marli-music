@@ -1,9 +1,10 @@
-import express, { Express, Request, Response } from 'express';
 import * as dotenv from 'dotenv';
+import express, { Express, Request, Response } from 'express';
 
-import { YtdlSourceStream } from 'sources/ytdl-source/ytdl-source';
-import { CommandsHandler } from 'bot/commands-handler';
-import { MarliMusic } from 'bot/marli-music';
+import { CommandsHandler } from './bot/commands-handler';
+import { MarliMusic } from './bot/marli-music';
+import { YtdlSourceStream } from './sources/ytdl-source/ytdl-source';
+
 dotenv.config();
 
 const server: Express = express();
@@ -18,18 +19,25 @@ const BOT_PREFIX = process.env.BOT_PREFIX;
 
 const botHandler = new CommandsHandler(new YtdlSourceStream());
 
-new MarliMusic(BOT_PREFIX, BOT_TOKEN, botHandler, {
-	intents: [
-		'Guilds',
-		'GuildMessages',
-		'MessageContent',
-		'GuildVoiceStates',
-		'DirectMessageReactions',
-		'GuildEmojisAndStickers',
-		'GuildMembers',
-		'GuildMessageTyping',
-	],
-});
+new MarliMusic(
+	{
+		prefix: BOT_PREFIX,
+		token: BOT_TOKEN,
+	},
+	botHandler,
+	{
+		intents: [
+			'Guilds',
+			'GuildMessages',
+			'MessageContent',
+			'GuildVoiceStates',
+			'DirectMessageReactions',
+			'GuildEmojisAndStickers',
+			'GuildMembers',
+			'GuildMessageTyping',
+		],
+	},
+);
 
 server.listen(port, () => {
 	console.log(`Server listening to: ${port}`);

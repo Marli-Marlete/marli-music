@@ -8,6 +8,7 @@
 	"scripts": {
 		"start": "tsx src/index.ts",
 		"start:watch": "tsx watch src/index.ts",
+		"build": "yarn tsc",
 		"lint": "eslint . --fix"
 	},
 	"dependencies": {
