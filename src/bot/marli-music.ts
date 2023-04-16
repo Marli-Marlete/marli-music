@@ -1,7 +1,7 @@
-import { Client, Message } from 'discord.js';
+import { Client, ClientOptions, Message } from 'discord.js'
 
-import { ClientOptions } from 'discord.js';
-import { BOT_MESSAGES } from './default-messages';
+import { CommandsHandler } from './commands-handler'
+import { BOT_MESSAGES } from './default-messages'
 
 export class MarliMusic extends Client {
 	constructor(
