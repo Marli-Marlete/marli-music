@@ -10,44 +10,15 @@ import {
 	getVoiceConnection,
 	joinVoiceChannel,
 } from '@discordjs/voice';
-import { SourceStream } from './sources/source-stream';
+import { SourceStream } from '../sources/source-stream';
 
 import { startBotHooks } from './bot-hooks';
-import { PlayDlSourceStream } from './sources/play-dl-source/play-dl.source';
+import { PlayDlSourceStream } from '../sources/play-dl-source/play-dl.source';
 
 export class BotHandler {
 	private player: AudioPlayer;
 
 	constructor(private sourceStream?: SourceStream) {}
-
-	public async onMessage(message: Message, botPrefix: string) {
-		if (message.author.bot) return;
-		if (!message.content.startsWith(botPrefix)) return;
-
-		const args = message.content.split(' ');
-		const input = message.content.replace(args[0], '');
-		const command = args[0].replace(botPrefix, '');
-
-		switch (command) {
-			case 'search':
-				this.search(message, input);
-				break;
-			case 'play':
-				this.play(message, input);
-				break;
-			case 'pause':
-				this.pause(message);
-				break;
-			case 'resume':
-				this.resume(message);
-				break;
-			case 'stop':
-				this.stop(message);
-				break;
-			default:
-				message.reply(BOT_MESSAGES.INVALID_COMMAND);
-		}
-	}
 
 	public async search(message: Message, input: string) {
 		this.validateInput(message, input);

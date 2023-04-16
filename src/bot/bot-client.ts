@@ -1,16 +1,17 @@
 import { Client, Message } from 'discord.js';
 import { BotHandler } from 'bot/bot-handler';
 import { ClientOptions } from 'discord.js';
+import { BOT_MESSAGES } from './default-messages';
 
 export class MarliMusic extends Client {
 	constructor(
 		private prefix: string,
 		public token: string,
+		private handler: BotHandler,
 		options?: ClientOptions,
-		private handler?: BotHandler,
 	) {
 		super(options);
-		if (!handler) this.handler = new BotHandler();
+
 		this.login(this.token);
 		this.once('ready', () => {
 			console.log(this.user.username, 'ready');
@@ -24,9 +25,37 @@ export class MarliMusic extends Client {
 		});
 
 		this.on('messageCreate', async (message: Message) => {
-			console.log('New message', message.content);
-			this.handler.onMessage(message, this.prefix);
+			this.onMessage(message, this.prefix);
 		});
+	}
+
+	private async onMessage(message: Message, botPrefix: string) {
+		if (message.author.bot) return;
+		if (!message.content.startsWith(botPrefix)) return;
+
+		const args = message.content.split(' ');
+		const input = message.content.replace(args[0], '');
+		const command = args[0].replace(botPrefix, '');
+
+		switch (command) {
+			case 'search':
+				this.handler.search(message, input);
+				break;
+			case 'play':
+				this.handler.play(message, input);
+				break;
+			case 'pause':
+				this.handler.pause(message);
+				break;
+			case 'resume':
+				this.handler.resume(message);
+				break;
+			case 'stop':
+				this.handler.stop(message);
+				break;
+			default:
+				message.reply(BOT_MESSAGES.INVALID_COMMAND);
+		}
 	}
 
 	public getPrefix(): string {
