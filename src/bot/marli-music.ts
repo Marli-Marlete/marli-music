@@ -23,7 +23,8 @@ export class MarliMusic extends Client {
 		this.login(this.botInfo.token);
 
 		this.once('ready', () => {
-			console.log(this.user.username, 'ready');
+			this.healthCheck()
+			setInterval(this.healthCheck.bind(this), 120_000);
 		});
 
 		this.once('reconnecting', () => {
@@ -36,6 +37,10 @@ export class MarliMusic extends Client {
 		this.on('messageCreate', async (message: Message) => {
 			this.onMessage(message, this.prefix);
 		});
+	}
+
+	public healthCheck() {
+		return console.log(`${this.user.username} online ${this.uptime}`);
 	}
 
 	private async onMessage(message: Message, botPrefix: string) {
