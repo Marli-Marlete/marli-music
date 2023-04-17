@@ -37,7 +37,10 @@ export function startBotHooks(
 		if (newState.status === AudioPlayerStatus.Paused) player.unpause();
 	});
 
-	player.on(AudioPlayerStatus.Idle, () => connection.destroy());
+	player.on(AudioPlayerStatus.Idle, () => {
+		if (connection) 
+			connection.destroy()
+	});
 	player.on(AudioPlayerStatus.Playing, () => {
 		console.log('Audio Player is currently playing');
 	});
