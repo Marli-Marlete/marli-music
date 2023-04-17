@@ -1,19 +1,18 @@
 import { Message } from 'discord.js';
 
-import { BOT_MESSAGES } from './default-messages';
-
 import {
 	AudioPlayer,
-	StreamType,
-	VoiceConnection,
 	createAudioResource,
 	getVoiceConnection,
 	joinVoiceChannel,
+	StreamType,
+	VoiceConnection,
 } from '@discordjs/voice';
-import { SourceStream } from '../sources/source-stream';
 
-import { startBotHooks } from './bot-hooks';
 import { PlayDlSourceStream } from '../sources/play-dl-source/play-dl.source';
+import { SourceStream } from '../sources/source-stream';
+import { startBotHooks } from './bot-hooks';
+import { BOT_MESSAGES } from './default-messages';
 
 export class CommandsHandler {
 	private player: AudioPlayer;
@@ -49,32 +48,43 @@ export class CommandsHandler {
 		this.getSourceStream();
 		startBotHooks(connection, this.player);
 
-		const searchResult = await this.sourceStream.search(input);
-		const stream = await this.sourceStream.getStream(searchResult[0].url);
+		const video = await this.sourceStream.getStreamInfo(input);
+
+		const searchResult = video ?? (await this.sourceStream.search(input));
+
+		const stream = await this.sourceStream.getStream(
+			video?.url ?? searchResult[0].url,
+		);
 
 		const resource = createAudioResource(stream, {
 			inputType: StreamType.Arbitrary,
 		});
 
 		this.player.play(resource);
+
 		connection.subscribe(this.player);
 
 		return message.reply({
-			content: `${BOT_MESSAGES.CURRENT_PLAYING} ${searchResult[0].title}`,
+			content: `${BOT_MESSAGES.CURRENT_PLAYING} ${
+				video?.title ?? searchResult[0].title
+			}`,
 		});
 	}
+
 	public async pause(message: Message) {
 		this.player.pause();
 		return message.reply({
 			content: `${message.author.username} ${BOT_MESSAGES.MUSIC_PAUSED}`,
 		});
 	}
+
 	public async resume(message: Message) {
 		this.player.unpause();
 		return message.reply({
 			content: `${message.author.username} ${BOT_MESSAGES.MUSIC_RESUMED}`,
 		});
 	}
+
 	public async stop(message: Message) {
 		this.player.stop();
 		return message.reply({

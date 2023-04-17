@@ -37,4 +37,22 @@ export class YtdlSourceStream implements SourceStream {
 			throw new Error(ERRORS.RESULT_NOT_FOUND);
 		}
 	}
+
+	async getStreamInfo(input: string) {
+		try {
+			if (input.startsWith('https') && ytdl.validateURL(input)) {
+				const videoId = ytdl.getURLVideoID(input);
+
+				const info = await ytdl.getInfo(videoId);
+
+				return {
+					title: info.player_response.videoDetails.title,
+					url: info.videoDetails.video_url,
+				};
+			}
+		} catch (e) {
+			console.debug(e);
+			throw new Error(ERRORS.RESULT_NOT_FOUND);
+		}
+	}
 }

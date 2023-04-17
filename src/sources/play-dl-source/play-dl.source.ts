@@ -1,5 +1,5 @@
 import { Readable } from 'node:stream';
-import play, { YouTubeVideo } from 'play-dl';
+import play, { YouTubeVideo, yt_validate } from 'play-dl';
 
 import { ERRORS } from '../../shared/errors';
 import { ResultAudioSearch, SourceStream } from '../source-stream';
@@ -14,6 +14,7 @@ export class PlayDlSourceStream implements SourceStream {
 			throw new Error(ERRORS.RESULT_NOT_FOUND);
 		}
 	}
+
 	async search(input: string): Promise<ResultAudioSearch[]> {
 		try {
 			const result = await play.search(input, {
@@ -28,6 +29,22 @@ export class PlayDlSourceStream implements SourceStream {
 				title: video.title,
 				url: video.url,
 			}));
+		} catch (e) {
+			console.debug(e);
+			throw new Error(ERRORS.RESULT_NOT_FOUND);
+		}
+	}
+
+	async getStreamInfo(input: string) {
+		try {
+			if (input.startsWith('https') && yt_validate(input) === 'video') {
+				const videoInfo = await play.video_info(input);
+
+				return {
+					title: videoInfo.video_details.title,
+					url: videoInfo.video_details.url,
+				};
+			}
 		} catch (e) {
 			console.debug(e);
 			throw new Error(ERRORS.RESULT_NOT_FOUND);

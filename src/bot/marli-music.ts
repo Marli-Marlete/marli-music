@@ -1,5 +1,7 @@
 import { Client, ClientOptions, Message } from 'discord.js';
 
+import { Redis } from '@upstash/redis';
+
 import { CommandsHandler } from './commands-handler';
 import { BOT_MESSAGES } from './default-messages';
 
@@ -14,6 +16,7 @@ export class MarliMusic extends Client {
 	constructor(
 		private botInfo: BotInfo,
 		private handler: CommandsHandler,
+		private redis: Redis,
 		options?: ClientOptions,
 	) {
 		super(options);
@@ -23,7 +26,7 @@ export class MarliMusic extends Client {
 		this.login(this.botInfo.token);
 
 		this.once('ready', () => {
-			this.healthCheck()
+			this.healthCheck();
 			setInterval(this.healthCheck.bind(this), 120_000);
 		});
 

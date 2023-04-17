@@ -3,6 +3,5 @@ node_modules
 .conf
 dist
 data
-yarn.lock
 *.log
 .env

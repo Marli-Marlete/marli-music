@@ -38,9 +38,9 @@ export function startBotHooks(
 	});
 
 	player.on(AudioPlayerStatus.Idle, () => {
-		if (connection) 
-			connection.destroy()
+		if (connection) connection.destroy();
 	});
+
 	player.on(AudioPlayerStatus.Playing, () => {
 		console.log('Audio Player is currently playing');
 	});
