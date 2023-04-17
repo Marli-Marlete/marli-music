@@ -61,6 +61,7 @@ export class CommandsHandler {
 		});
 
 		this.player.play(resource);
+
 		connection.subscribe(this.player);
 
 		return message.reply({
@@ -69,18 +70,21 @@ export class CommandsHandler {
 			}`,
 		});
 	}
+
 	public async pause(message: Message) {
 		this.player.pause();
 		return message.reply({
 			content: `${message.author.username} ${BOT_MESSAGES.MUSIC_PAUSED}`,
 		});
 	}
+
 	public async resume(message: Message) {
 		this.player.unpause();
 		return message.reply({
 			content: `${message.author.username} ${BOT_MESSAGES.MUSIC_RESUMED}`,
 		});
 	}
+
 	public async stop(message: Message) {
 		this.player.stop();
 		return message.reply({
