@@ -43,12 +43,13 @@ export class MarliMusic extends Client {
 	}
 
 	public healthCheck() {
-		return console.log(`${this.user.username} online ${this.uptime}`);
+		return `${this.user.username} online ${this.uptime}`;
 	}
 
 	private async onMessage(message: Message, botPrefix: string) {
 		if (message.author.bot) return;
 		if (!message.content.startsWith(botPrefix)) return;
+		if (!this.validate(message)) return;
 
 		const args = message.content.split(' ');
 		const input = message.content.replace(args[0], '');
@@ -73,5 +74,21 @@ export class MarliMusic extends Client {
 			default:
 				message.reply(BOT_MESSAGES.INVALID_COMMAND);
 		}
+	}
+
+	private validate(message: Message) {
+		const voiceChannel = message.member.voice.channel;
+		if (!voiceChannel) {
+			message.channel.send(BOT_MESSAGES.NOT_IN_A_VOICE_CHANNEL);
+			return false;
+		}
+
+		const permissions = voiceChannel.permissionsFor(message.client.user);
+
+		if (!permissions.has('Connect') || !permissions.has('Speak')) {
+			message.channel.send(BOT_MESSAGES.NO_PERMISSION_JOIN_SPEAK);
+			return false;
+		}
+		return true;
 	}
 }

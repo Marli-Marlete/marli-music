@@ -1,3 +1,4 @@
+import { Message } from 'discord.js';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -24,3 +25,9 @@ export const BOT_MESSAGES = {
 	NOT_IN_A_VOICE_CHANNEL,
 	NO_PERMISSION_JOIN_SPEAK,
 };
+
+export function sendCommandError(errorMessage: string, message: Message) {
+	message.reply({
+		content: errorMessage,
+	});
+}

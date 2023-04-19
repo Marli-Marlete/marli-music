@@ -6,83 +6,88 @@ import {
 	getVoiceConnection,
 	joinVoiceChannel,
 	StreamType,
-	VoiceConnection,
 } from '@discordjs/voice';
 
-import { PlayDlSourceStream } from '../sources/play-dl-source/play-dl.source';
 import { SourceStream } from '../sources/source-stream';
 import { startBotHooks } from './bot-hooks';
-import { BOT_MESSAGES } from './default-messages';
+import { BOT_MESSAGES, sendCommandError } from './default-messages';
 
 export class CommandsHandler {
 	private player: AudioPlayer;
 
-	constructor(private sourceStream?: SourceStream) {}
+	constructor(private sourceStream: SourceStream) {}
 
 	public async search(message: Message, input: string) {
-		this.validateInput(message, input);
-		this.getSourceStream();
-		const results = await this.sourceStream.search(input);
-		return message.reply({
-			content: JSON.stringify(results),
-		});
+		try {
+			this.validateInput(message, input);
+			this.getSourceStream();
+			const results = await this.sourceStream.search(input);
+			return message.reply({
+				content: JSON.stringify(results),
+			});
+		} catch (err) {
+			sendCommandError(err, message);
+		}
 	}
 
 	public async play(message: Message, input: string) {
-		this.validateStatus(message);
-		this.validateInput(message, input);
+		if (!this.validateInput(message, input)) return;
 
 		const voiceMember = message.member.voice;
 
-		let connection: VoiceConnection;
-
-		connection = getVoiceConnection(voiceMember.guild.id);
-		if (!connection)
-			connection = joinVoiceChannel({
-				adapterCreator: voiceMember.guild.voiceAdapterCreator,
-				channelId: voiceMember.channelId,
-				guildId: String(voiceMember.guild.id),
-			});
+		const connection = joinVoiceChannel({
+			adapterCreator: voiceMember.guild.voiceAdapterCreator,
+			channelId: voiceMember.channelId,
+			guildId: String(voiceMember.guild.id),
+		});
 
 		this.getPlayer();
 		this.getSourceStream();
 		startBotHooks(connection, this.player);
 
-		const video = await this.sourceStream.getStreamInfo(input);
+		try {
+			const video = await this.sourceStream.getStreamInfo(input);
 
-		const searchResult = video ?? (await this.sourceStream.search(input));
+			const searchResult = video ?? (await this.sourceStream.search(input));
 
-		const stream = await this.sourceStream.getStream(
-			video?.url ?? searchResult[0].url,
-		);
+			const stream = await this.sourceStream.getStream(
+				video?.url ?? searchResult[0].url,
+			);
 
-		const resource = createAudioResource(stream, {
-			inputType: StreamType.Arbitrary,
-		});
+			const resource = createAudioResource(stream, {
+				inputType: StreamType.Arbitrary,
+			});
 
-		this.player.play(resource);
+			this.player.play(resource);
 
-		connection.subscribe(this.player);
+			connection.subscribe(this.player);
 
-		return message.reply({
-			content: `${BOT_MESSAGES.CURRENT_PLAYING} ${
-				video?.title ?? searchResult[0].title
-			}`,
-		});
+			return message.reply({
+				content: `${BOT_MESSAGES.CURRENT_PLAYING} ${
+					video?.title ?? searchResult[0].title
+				}`,
+			});
+		} catch (err) {
+			sendCommandError(err, message);
+		}
 	}
 
 	public async pause(message: Message) {
-		this.player.pause();
-		return message.reply({
-			content: `${message.author.username} ${BOT_MESSAGES.MUSIC_PAUSED}`,
-		});
+		if (this.getConnection(message)) {
+			this.player.pause();
+			return message.reply({
+				content: `${message.author.username} ${BOT_MESSAGES.MUSIC_PAUSED}`,
+			});
+		}
 	}
 
 	public async resume(message: Message) {
-		this.player.unpause();
-		return message.reply({
-			content: `${message.author.username} ${BOT_MESSAGES.MUSIC_RESUMED}`,
-		});
+		if (this.getConnection(message)) {
+			this.player.unpause();
+			return message.reply({
+				content: `${message.author.username} ${BOT_MESSAGES.MUSIC_RESUMED}`,
+			});
+		}
 	}
 
 	public async stop(message: Message) {
@@ -102,23 +107,16 @@ export class CommandsHandler {
 	}
 
 	public getSourceStream() {
-		if (!this.sourceStream) this.sourceStream = new PlayDlSourceStream();
 		return this.sourceStream;
 	}
 
-	private validateStatus(message: Message) {
-		const voiceChannel = message.member.voice.channel;
-		if (!voiceChannel)
-			return message.channel.send(BOT_MESSAGES.NOT_IN_A_VOICE_CHANNEL);
-
-		const permissions = voiceChannel.permissionsFor(message.client.user);
-
-		if (!permissions.has('Connect') || !permissions.has('Speak'))
-			return message.channel.send(BOT_MESSAGES.NO_PERMISSION_JOIN_SPEAK);
+	public getConnection(message: Message) {
+		return getVoiceConnection(message.member.voice.guild.id);
 	}
 
 	private validateInput(message: Message, input: string) {
-		if (input.length < 1)
-			return message.reply({ content: BOT_MESSAGES.INVALID_INPUT_MESSAGE });
+		if (input.length > 1) return true;
+		message.reply({ content: BOT_MESSAGES.INVALID_INPUT_MESSAGE });
+		return false;
 	}
 }
