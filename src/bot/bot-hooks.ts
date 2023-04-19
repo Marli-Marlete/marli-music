@@ -38,7 +38,8 @@ export function startBotHooks(
 	});
 
 	player.on(AudioPlayerStatus.Idle, () => {
-		if (connection) connection.destroy();
+		if (connection.state.status !== VoiceConnectionStatus.Destroyed)
+			connection.destroy();
 	});
 
 	player.on(AudioPlayerStatus.Playing, () => {
