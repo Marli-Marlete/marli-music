@@ -6,53 +6,40 @@ import { ERRORS } from '../../shared/errors';
 import { ResultAudioSearch, SourceStream } from '../source-stream';
 
 export class YtdlSourceStream implements SourceStream {
-	getStream(url: string): Readable {
-		try {
-			console.log(url);
-			const stream = ytdl(url, {
-				filter: 'audioonly',
-				quality: 'highestaudio',
-			});
-			if (stream) return stream;
-		} catch (e) {
-			throw new Error(ERRORS.RESULT_NOT_FOUND);
-		}
+	async getStream(url: string): Promise<Readable> {
+		const stream = ytdl(url, {
+			filter: 'audioonly',
+			quality: 'lowestaudio',
+			dlChunkSize: 0,
+			highWaterMark: 1 << 25,
+		});
+		if (!stream) Promise.reject(ERRORS.RESULT_NOT_FOUND);
+		return Promise.resolve(stream);
 	}
 
 	async search(input: string): Promise<ResultAudioSearch[]> {
-		try {
-			const result = await yts(input);
-			if (result.videos.length < 1) throw new Error(ERRORS.RESULT_NOT_FOUND);
-			const videos = result.videos.slice(0, 10);
-			return videos.map((video) => {
-				return {
-					duration: video.duration.toString(),
-					id: video.videoId,
-					title: video.title,
-					url: video.url,
-				};
-			});
-		} catch (e) {
-			console.error(e);
-			throw new Error(ERRORS.RESULT_NOT_FOUND);
-		}
+		const result = await yts(input);
+		if (result.videos.length < 1)
+			return Promise.reject(ERRORS.RESULT_NOT_FOUND);
+		const videos = result.videos.slice(0, 10);
+		return videos.map((video) => ({
+			duration: video.duration.toString(),
+			id: video.videoId,
+			title: video.title,
+			url: video.url,
+		}));
 	}
 
 	async getStreamInfo(input: string) {
-		try {
-			if (input.startsWith('https') && ytdl.validateURL(input)) {
-				const videoId = ytdl.getURLVideoID(input);
+		if (input.startsWith('https') && ytdl.validateURL(input)) {
+			const videoId = ytdl.getURLVideoID(input);
 
-				const info = await ytdl.getInfo(videoId);
+			const info = await ytdl.getInfo(videoId);
 
-				return {
-					title: info.player_response.videoDetails.title,
-					url: info.videoDetails.video_url,
-				};
-			}
-		} catch (e) {
-			console.debug(e);
-			throw new Error(ERRORS.RESULT_NOT_FOUND);
+			return {
+				title: info.player_response.videoDetails.title,
+				url: info.videoDetails.video_url,
+			};
 		}
 	}
 }

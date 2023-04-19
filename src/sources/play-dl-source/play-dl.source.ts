@@ -16,38 +16,28 @@ export class PlayDlSourceStream implements SourceStream {
 	}
 
 	async search(input: string): Promise<ResultAudioSearch[]> {
-		try {
-			const result = await play.search(input, {
-				source: {
-					youtube: 'video',
-				},
-			});
+		const result = await play.search(input, {
+			source: {
+				youtube: 'video',
+			},
+		});
 
-			return result.map((video: YouTubeVideo) => ({
-				duration: video.durationRaw.toString(),
-				id: video.id,
-				title: video.title,
-				url: video.url,
-			}));
-		} catch (e) {
-			console.debug(e);
-			throw new Error(ERRORS.RESULT_NOT_FOUND);
-		}
+		return result.map((video: YouTubeVideo) => ({
+			duration: video.durationRaw.toString(),
+			id: video.id,
+			title: video.title,
+			url: video.url,
+		}));
 	}
 
 	async getStreamInfo(input: string) {
-		try {
-			if (input.startsWith('https') && yt_validate(input) === 'video') {
-				const videoInfo = await play.video_info(input);
+		if (input.startsWith('https') && yt_validate(input) === 'video') {
+			const videoInfo = await play.video_info(input);
 
-				return {
-					title: videoInfo.video_details.title,
-					url: videoInfo.video_details.url,
-				};
-			}
-		} catch (e) {
-			console.debug(e);
-			throw new Error(ERRORS.RESULT_NOT_FOUND);
+			return {
+				title: videoInfo.video_details.title,
+				url: videoInfo.video_details.url,
+			};
 		}
 	}
 }
