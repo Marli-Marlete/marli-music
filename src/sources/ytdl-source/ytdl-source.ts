@@ -8,10 +8,10 @@ import { ResultAudioSearch, SourceStream } from '../source-stream';
 export class YtdlSourceStream implements SourceStream {
 	async getStream(url: string): Promise<Readable> {
 		const stream = ytdl(url, {
-			filter: 'audioonly',
-			quality: 'lowestaudio',
 			dlChunkSize: 0,
+			filter: 'audioonly',
 			highWaterMark: 1 << 25,
+			quality: 'lowestaudio',
 		});
 		if (!stream) Promise.reject(ERRORS.RESULT_NOT_FOUND);
 		return Promise.resolve(stream);

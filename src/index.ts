@@ -21,7 +21,7 @@ const redis = new Redis({
 	url: process.env.REDIS_URL,
 });
 
-const marliMusic = new MarliMusic(
+new MarliMusic(
 	{
 		prefix: BOT_PREFIX,
 		token: BOT_TOKEN,
