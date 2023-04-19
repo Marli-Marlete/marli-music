@@ -1,7 +1,7 @@
 import 'isomorphic-fetch';
 
 import * as dotenv from 'dotenv';
-import express, { Express, Request, Response } from 'express';
+import express, { Express, Request, Response, Router } from 'express';
 
 import { Redis } from '@upstash/redis';
 
@@ -44,13 +44,16 @@ const marliMusic = new MarliMusic(
 );
 
 const server: Express = express();
+const router = Router();
+server.use(router);
 
 const port = process.env.PORT || 3000;
-server.get('/', (_request: Request, response: Response) => {
+
+router.get('/', (_request: Request, response: Response) => {
 	return response.sendFile('./public/index.html', { root: '.' });
 });
 
-server.post('/health-check', (_request: Request, response: Response) => {
+router.post('/health-check', (_request: Request, response: Response) => {
 	return response.json({
 		message: marliMusic.healthCheck(),
 	});
