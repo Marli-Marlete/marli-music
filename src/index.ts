@@ -55,7 +55,7 @@ router.get('/', (_request: Request, response: Response) => {
 
 router.post('/health-check', (_request: Request, response: Response) => {
 	return response.json({
-		message: marliMusic.healthCheck(),
+		message: 'Ok',
 	});
 });
 
