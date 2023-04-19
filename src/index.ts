@@ -11,13 +11,6 @@ import { YtdlSourceStream } from './sources/ytdl-source/ytdl-source';
 
 dotenv.config();
 
-const server: Express = express();
-
-const port = process.env.PORT || 3000;
-server.get('/', (_request: Request, response: Response) => {
-	return response.sendFile('./public/index.html', { root: '.' });
-});
-
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const BOT_PREFIX = process.env.BOT_PREFIX;
 
@@ -28,7 +21,7 @@ const redis = new Redis({
 	url: process.env.REDIS_URL,
 });
 
-new MarliMusic(
+const marliMusic = new MarliMusic(
 	{
 		prefix: BOT_PREFIX,
 		token: BOT_TOKEN,
@@ -45,9 +38,23 @@ new MarliMusic(
 			'GuildEmojisAndStickers',
 			'GuildMembers',
 			'GuildMessageTyping',
+			'GuildMessageReactions',
 		],
 	},
 );
+
+const server: Express = express();
+
+const port = process.env.PORT || 3000;
+server.get('/', (_request: Request, response: Response) => {
+	return response.sendFile('./public/index.html', { root: '.' });
+});
+
+server.post('/health-check', (_request: Request, response: Response) => {
+	return response.json({
+		message: marliMusic.healthCheck(),
+	});
+});
 
 server.listen(port, () => {
 	console.log(`Server listening to: ${port}`);
