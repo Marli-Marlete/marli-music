@@ -11,7 +11,7 @@ import {
 import { SourceStream } from '../sources/source-stream';
 import { startBotHooks } from './bot-hooks';
 import { BOT_MESSAGES, sendCommandError } from './default-messages';
-import { sentryCapture } from 'config/sentry';
+import { sentryCapture } from '../config/sentry';
 
 export class CommandsHandler {
 	private player: AudioPlayer;
@@ -41,8 +41,8 @@ export class CommandsHandler {
 			channelId: voiceMember.channelId,
 			guildId: String(voiceMember.guild.id),
 		});
-
 		this.getPlayer();
+
 		startBotHooks(connection, this.player);
 
 		try {
