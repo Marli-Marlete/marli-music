@@ -8,8 +8,10 @@ import { Redis } from '@upstash/redis';
 import { CommandsHandler } from './bot/commands-handler';
 import { MarliMusic } from './bot/marli-music';
 import { YtdlSourceStream } from './sources/ytdl-source/ytdl-source';
+import { initSentry, sentryCapture } from 'config/sentry';
 
 dotenv.config();
+initSentry();
 
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const BOT_PREFIX = process.env.BOT_PREFIX;
@@ -42,6 +44,7 @@ new MarliMusic(
 		],
 	},
 );
+
 
 const server: Express = express();
 const router = Router();
