@@ -11,6 +11,7 @@ import {
 import { SourceStream } from '../sources/source-stream';
 import { startBotHooks } from './bot-hooks';
 import { BOT_MESSAGES, sendCommandError } from './default-messages';
+import { sentryCapture } from 'config/sentry';
 
 export class CommandsHandler {
 	private player: AudioPlayer;
@@ -42,10 +43,10 @@ export class CommandsHandler {
 		});
 
 		this.getPlayer();
-		this.getSourceStream();
 		startBotHooks(connection, this.player);
 
 		try {
+			
 			const video = await this.sourceStream.getStreamInfo(input);
 
 			const searchResult = video ?? (await this.sourceStream.search(input));
@@ -98,8 +99,14 @@ export class CommandsHandler {
 	}
 
 	public getPlayer() {
-		if (!this.player) this.player = new AudioPlayer();
+		try {
+			if (!this.player) this.player = new AudioPlayer({
+				debug: true
+			});
 		return this.player;
+		} catch(error) {
+			sentryCapture("audio.error", error)
+		}
 	}
 
 	public setSourceStream(source: SourceStream) {
