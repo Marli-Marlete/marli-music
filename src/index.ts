@@ -12,7 +12,7 @@ import { Redis } from '@upstash/redis';
 import { CommandsHandler } from './bot/commands-handler';
 import { MarliMusic } from './bot/marli-music';
 import { YtdlSourceStream } from './sources/ytdl-source/ytdl-source';
-import { initSentry } from 'config/sentry';
+import { initSentry } from './config/sentry';
 import { join } from 'path';
 
 dotenv.config();
