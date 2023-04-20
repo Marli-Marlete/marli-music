@@ -1,14 +1,22 @@
 import 'isomorphic-fetch';
 
 import * as dotenv from 'dotenv';
-import express, { Express, Request, Response, Router } from 'express';
+import express, {
+	Express,
+	NextFunction,
+	Request,
+	Response,
+	Router,
+} from 'express';
 
 import { Redis } from '@upstash/redis';
 
 import { CommandsHandler } from './bot/commands-handler';
 import { MarliMusic } from './bot/marli-music';
 import { YtdlSourceStream } from './sources/ytdl-source/ytdl-source';
-import { initSentry, sentryCapture } from 'config/sentry';
+import { initSentry } from 'config/sentry';
+
+import path, { join } from 'path';
 
 dotenv.config();
 initSentry();
@@ -45,15 +53,22 @@ new MarliMusic(
 	},
 );
 
-
 const server: Express = express();
 const router = Router();
 server.use(router);
 
 const port = process.env.PORT || 3000;
 
-router.get('/', (_request: Request, response: Response) => {
-	return response.sendFile('./public/index.html', { root: '.' });
+router.get('/', (_request: Request, response: Response, next: NextFunction) => {
+	const options = {
+		root: join('public'),
+	};
+	return response.sendFile('index.html', options, (err) => {
+		if (err) {
+			next();
+			console.log(err);
+		}
+	});
 });
 
 router.post('/health-check', (_request: Request, response: Response) => {

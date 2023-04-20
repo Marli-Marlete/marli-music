@@ -4,7 +4,7 @@ import {
 	VoiceConnection,
 	VoiceConnectionStatus,
 } from '@discordjs/voice';
-import { sentryCapture } from 'config/sentry';
+import { sentryCapture } from '../config/sentry';
 
 export function startBotHooks(
 	connection: VoiceConnection,

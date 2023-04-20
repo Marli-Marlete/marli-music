@@ -9,8 +9,8 @@ export function initSentry() {
 
 export function sentryCapture(name: string, error: Error) {
 	const transaction = Sentry.startTransaction({
-		op: 'transaction',
 		name,
+		op: 'transaction',
 	});
 
 	Sentry.captureException(error);
