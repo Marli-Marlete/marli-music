@@ -4,6 +4,7 @@ import {
 	VoiceConnection,
 	VoiceConnectionStatus,
 } from '@discordjs/voice';
+import { sentryCapture } from 'config/sentry';
 
 export function startBotHooks(
 	connection: VoiceConnection,
@@ -16,6 +17,7 @@ export function startBotHooks(
 	connection.on('error', (error: Error) => {
 		console.log('connection error', error);
 		connection.rejoin();
+		sentryCapture('connection.error', error);
 	});
 
 	connection.on('stateChange', (oldState, newState) => {
@@ -44,5 +46,10 @@ export function startBotHooks(
 
 	player.on(AudioPlayerStatus.Playing, () => {
 		console.log('Audio Player is currently playing');
+	});
+
+	player.on('error', (error: Error) => {
+		console.log('audio player error', error);
+		sentryCapture('player.error', error);
 	});
 }
