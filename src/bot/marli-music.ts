@@ -4,7 +4,7 @@ import { Redis } from '@upstash/redis';
 
 import { CommandsHandler } from './commands-handler';
 import { BOT_MESSAGES } from './default-messages';
-import { sentryCapture } from 'config/sentry';
+import { sentryCapture } from '../config/sentry';
 
 interface BotInfo {
 	prefix: string;

@@ -8,15 +8,12 @@ import express, {
 	Response,
 	Router,
 } from 'express';
-
 import { Redis } from '@upstash/redis';
-
 import { CommandsHandler } from './bot/commands-handler';
 import { MarliMusic } from './bot/marli-music';
 import { YtdlSourceStream } from './sources/ytdl-source/ytdl-source';
 import { initSentry } from 'config/sentry';
-
-import path, { join } from 'path';
+import { join } from 'path';
 
 dotenv.config();
 initSentry();
