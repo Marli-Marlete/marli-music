@@ -1,5 +1,5 @@
 {
-	"exclude": ["dist/", "node_modules"],
+	"exclude": ["dist/", "node_modules", "test"],
 	"include": ["./src/**/*.ts", "./**/*.json"],
 
 	"compilerOptions": {
@@ -25,7 +25,8 @@
 		"noFallthroughCasesInSwitch": false,
 		"outDir": "./dist",
 		"paths": {
-			"@src/*": ["src/*"]
+			"@src/*": ["src/*"],
+			"@test/*": ["test/*"]
 		},
 		"types": ["node"]
 	},

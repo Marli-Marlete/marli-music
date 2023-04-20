@@ -9,7 +9,10 @@
 		"start": "tsx src/index.ts",
 		"start:watch": "tsx watch src/index.ts",
 		"build": "yarn tsc",
-		"lint": "eslint . --fix"
+		"lint": "eslint . --fix",
+		"format": "prettier --config .prettierrc './**/*.ts' --write",
+		"test": "ava",
+		"test-coverage": "c8 ava"
 	},
 	"dependencies": {
 		"@discordjs/opus": "^0.9.0",
@@ -31,15 +34,39 @@
 		"@types/ffmpeg": "^1.0.4",
 		"@types/fluent-ffmpeg": "^2.1.21",
 		"@types/isomorphic-fetch": "^0.0.36",
-		"@types/node": "^18.15.11",
+		"@types/node": "^18.15.12",
+		"@types/sinon": "^10.0.14",
 		"@types/yt-search": "^2.3.2",
 		"@typescript-eslint/eslint-plugin": "^5.58.0",
 		"@typescript-eslint/parser": "^5.58.0",
+		"ava": "^5.2.0",
+		"c8": "^7.13.0",
 		"eslint": "^8.38.0",
 		"eslint-plugin-sort-keys-fix": "^1.1.2",
 		"ffmpeg-static": "^5.1.0",
 		"libsodium-wrappers": "^0.7.11",
+		"prettier": "^2.8.7",
+		"sinon": "^15.0.3",
+		"ts-node": "^10.9.1",
 		"tsx": "^3.12.6",
 		"typescript": "^5.0.4"
+	},
+	"ava": {
+		"files": [
+			"./test/**/*.test.ts"
+		],
+		"verbose": true,
+		"concurrency": 5,
+		"failFast": true,
+		"environmentVariables": {
+			"BOT_TOKEN": "TEST_TOKEN",
+			"BOT_PREFIX": "/"
+		},
+		"extensions": [
+			"ts"
+		],
+		"nodeArguments": [
+			"--loader=ts-node/esm"
+		]
 	}
 }
