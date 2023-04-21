@@ -34,9 +34,7 @@ export function startBotHooks(
 	});
 
 	player.on('stateChange', (oldState, newState) => {
-		logger.log('info', `audio player changes from ${oldState.status} to ${newState.status}`,);
-		if (newState.status === AudioPlayerStatus.Paused) player.unpause();
-		if (newState.status === AudioPlayerStatus.AutoPaused) removeAutoPause(player)
+		logger.log('info', `audio player changes from ${oldState.status} to ${newState.status}`);
 	});
 
 	player.on(AudioPlayerStatus.Idle, () => {
