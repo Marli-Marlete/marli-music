@@ -5,38 +5,35 @@ import {
 	VoiceConnectionStatus,
 } from '@discordjs/voice';
 import { sentryCapture } from '../config/sentry';
+import { logger } from '../config/winston';
 
 export function startBotHooks(
 	connection: VoiceConnection,
 	player: AudioPlayer,
 ) {
 	connection.on('debug', (message) => {
-		console.log('connection debug', message);
+		logger.log('info', 'connection debug', message);
 	});
 
 	connection.on('error', (error: Error) => {
-		console.log('connection error', error);
 		connection.rejoin();
+		logger.log('error', 'connection error', error);
 		sentryCapture('connection.error', error);
 	});
 
 	connection.on('stateChange', (oldState, newState) => {
-		console.log(
+		logger.log('info', 
 			`connection changes from ${oldState.status} to ${newState.status} `,
 		);
 	});
 
 	connection.on(VoiceConnectionStatus.Disconnected, () => {
-		console.log('disconnect');
+		logger.log('info', 'disconnect');
 		connection.destroy();
 	});
 
 	player.on('stateChange', (oldState, newState) => {
-		console.log(
-			`audio player changes from ${oldState.status} to ${newState.status} `,
-		);
-
-		if (newState.status === AudioPlayerStatus.Paused) player.unpause();
+		logger.log('info', `audio player changes from ${oldState.status} to ${newState.status}`,);
 	});
 
 	player.on(AudioPlayerStatus.Idle, () => {
@@ -45,11 +42,11 @@ export function startBotHooks(
 	});
 
 	player.on(AudioPlayerStatus.Playing, () => {
-		console.log('Audio Player is currently playing');
+		logger.log('info', 'Audio Player is currently playing');
 	});
 
 	player.on('error', (error: Error) => {
-		console.log('audio player error', error);
+		logger.log('error', 'audio player error', error);
 		sentryCapture('player.error', error);
 	});
 }

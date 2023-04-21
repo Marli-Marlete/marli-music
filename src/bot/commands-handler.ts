@@ -12,6 +12,8 @@ import { SourceStream } from '../sources/source-stream';
 import { startBotHooks } from './bot-hooks';
 import { BOT_MESSAGES, sendCommandError } from './default-messages';
 import { sentryCapture } from '../config/sentry';
+import { logger } from '../config/winston';
+import { ERRORS } from '../shared/errors';
 
 export class CommandsHandler {
 	private player: AudioPlayer;
@@ -59,9 +61,14 @@ export class CommandsHandler {
 				inputType: StreamType.Arbitrary,
 			});
 
-			this.player.play(resource);
+			if (!resource.readable) throw new Error (ERRORS.RESOURCE_ERROR)
+			
+			this.player.play(resource)
+			logger.log("info", `valid reource:${resource.readable}`)
 
-			connection.subscribe(this.player);
+			const subscription = connection.subscribe(this.player);
+
+			if (!subscription || !subscription.player) throw new Error(ERRORS.SUBSCRIPTION_ERROR)
 
 			return message.reply({
 				content: `${BOT_MESSAGES.CURRENT_PLAYING} ${
@@ -69,7 +76,8 @@ export class CommandsHandler {
 				}`,
 			});
 		} catch (err) {
-			sendCommandError(err, message);
+			logger.log("error", err)
+			sendCommandError(JSON.stringify(err), message);
 		}
 	}
 
@@ -105,6 +113,7 @@ export class CommandsHandler {
 			});
 		return this.player;
 		} catch(error) {
+			logger.log('error', error);
 			sentryCapture("audio.error", error)
 		}
 	}

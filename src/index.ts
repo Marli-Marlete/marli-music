@@ -1,6 +1,5 @@
 import 'isomorphic-fetch';
 
-import * as dotenv from 'dotenv';
 import express, {
 	Express,
 	NextFunction,
@@ -12,11 +11,12 @@ import { Redis } from '@upstash/redis';
 import { CommandsHandler } from './bot/commands-handler';
 import { MarliMusic } from './bot/marli-music';
 import { YtdlSourceStream } from './sources/ytdl-source/ytdl-source';
-import { initSentry } from './config/sentry';
 import { join } from 'path';
+import {logger} from './config/winston'
+import { initConfigs } from './config';
 
-dotenv.config();
-initSentry();
+
+initConfigs()
 
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const BOT_PREFIX = process.env.BOT_PREFIX;
@@ -60,10 +60,10 @@ router.get('/', (_request: Request, response: Response, next: NextFunction) => {
 	const options = {
 		root: join('public'),
 	};
-	return response.sendFile('index.html', options, (err) => {
+	return response.sendFile('indexe.html', options, (err) => {
 		if (err) {
 			next();
-			console.log(err);
+			logger.log('error', err)
 		}
 	});
 });
@@ -75,5 +75,6 @@ router.post('/health-check', (_request: Request, response: Response) => {
 });
 
 server.listen(port, () => {
-	console.log(`Server listening to: ${port}`);
+
+	logger.log('info', `Server listening to: ${port}`)
 });
