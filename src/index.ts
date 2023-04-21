@@ -60,7 +60,7 @@ router.get('/', (_request: Request, response: Response, next: NextFunction) => {
 	const options = {
 		root: join('public'),
 	};
-	return response.sendFile('indexe.html', options, (err) => {
+	return response.sendFile('index.html', options, (err) => {
 		if (err) {
 			next();
 			logger.log('error', err)
