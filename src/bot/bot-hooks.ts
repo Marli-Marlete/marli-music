@@ -6,6 +6,7 @@ import {
 } from '@discordjs/voice';
 import { sentryCapture } from '../config/sentry';
 import { logger } from '../config/winston';
+import { remove } from 'winston';
 
 export function startBotHooks(
 	connection: VoiceConnection,
@@ -45,7 +46,6 @@ export function startBotHooks(
 
 	player.on(AudioPlayerStatus.Playing, () => {
 		logger.log('info', 'Audio Player is currently playing');
-		clearRemoveAutoPuase(player)
 	});
 
 	player.on('error', (error: Error) => {
@@ -55,12 +55,10 @@ export function startBotHooks(
 }
 
 
-const removeAutoPause = (player: AudioPlayer) => setInterval(() => {
-	player.checkPlayable()
-	player.unpause()
-	logger.log("info", `removeAutoPause: ${player.state.status}`)
-}, 1000)
-
-const clearRemoveAutoPuase = (player:AudioPlayer) => {
-	clearInterval(removeAutoPause.bind(player));
+const removeAutoPause = (player: AudioPlayer) => {
+	const interval = setInterval(() => {
+		player.unpause()
+		logger.log("info", `removeAutoPause: ${player.state.status}`)
+		if (player.state.status != AudioPlayerStatus.AutoPaused ) clearInterval(interval)
+	}, 1000)
 }
