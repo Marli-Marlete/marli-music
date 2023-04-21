@@ -5,8 +5,7 @@ import {
 	VoiceConnectionStatus,
 } from '@discordjs/voice';
 import { sentryCapture } from '../config/sentry';
-import { logger } from '../config/winston';
-import { remove } from 'winston';
+import { fileLogger, logger } from '../config/winston';
 
 export function startBotHooks(
 	connection: VoiceConnection,
@@ -18,12 +17,13 @@ export function startBotHooks(
 
 	connection.on('error', (error: Error) => {
 		connection.rejoin();
-		logger.log('error', 'connection error', error);
+		fileLogger.log('error', 'connection error', error);
 		sentryCapture('connection.error', error);
 	});
 
 	connection.on('stateChange', (oldState, newState) => {
-		logger.log('info', 
+		logger.log(
+			'info',
 			`connection changes from ${oldState.status} to ${newState.status} `,
 		);
 	});
@@ -34,7 +34,10 @@ export function startBotHooks(
 	});
 
 	player.on('stateChange', (oldState, newState) => {
-		logger.log('info', `audio player changes from ${oldState.status} to ${newState.status}`);
+		logger.log(
+			'info',
+			`audio player changes from ${oldState.status} to ${newState.status}`,
+		);
 	});
 
 	player.on(AudioPlayerStatus.Idle, () => {
@@ -47,16 +50,7 @@ export function startBotHooks(
 	});
 
 	player.on('error', (error: Error) => {
-		logger.log('error', 'audio player error', error);
+		fileLogger.log('error', 'audio player error', error);
 		sentryCapture('player.error', error);
 	});
-}
-
-
-const removeAutoPause = (player: AudioPlayer) => {
-	const interval = setInterval(() => {
-		player.unpause()
-		logger.log("info", `removeAutoPause: ${player.state.status}`)
-		if (player.state.status != AudioPlayerStatus.AutoPaused ) clearInterval(interval)
-	}, 1000)
 }

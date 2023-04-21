@@ -12,11 +12,10 @@ import { CommandsHandler } from './bot/commands-handler';
 import { MarliMusic } from './bot/marli-music';
 import { YtdlSourceStream } from './sources/ytdl-source/ytdl-source';
 import { join } from 'path';
-import {logger} from './config/winston'
+import { fileLogger, logger } from './config/winston';
 import { initConfigs } from './config';
 
-
-initConfigs()
+initConfigs();
 
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const BOT_PREFIX = process.env.BOT_PREFIX;
@@ -63,7 +62,7 @@ router.get('/', (_request: Request, response: Response, next: NextFunction) => {
 	return response.sendFile('index.html', options, (err) => {
 		if (err) {
 			next();
-			logger.log('error', err)
+			logger.log('error', err);
 		}
 	});
 });
@@ -75,6 +74,5 @@ router.post('/health-check', (_request: Request, response: Response) => {
 });
 
 server.listen(port, () => {
-
-	logger.log('info', `Server listening to: ${port}`)
+	fileLogger.log('info', `Server listening to: ${port}`);
 });
