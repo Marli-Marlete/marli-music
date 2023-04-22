@@ -35,9 +35,9 @@ jobs:
           REMOTE_HOST: ${{ secrets.HOST_DNS }}
           REMOTE_USER: ${{ secrets.USERNAME }}
           TARGET: ${{ secrets.TARGET_DIR }}
-          EXCLUDE: "/node_modules/"
+          EXCLUDE: ".git/, /node_modules/"
           SCRIPT_BEFORE: |
             source ~/.nvm/nvm.sh; npm install pm2 -g
-            npm install yarn -g
+            source ~/.nvm/nvm.sh; npm install yarn -g
           SCRIPT_AFTER: |
-            yarn
+            source ~/.nvm/nvm.sh; yarn
