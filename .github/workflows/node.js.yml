@@ -37,6 +37,6 @@ jobs:
           TARGET: ${{ secrets.TARGET_DIR }}
           EXCLUDE: "/node_modules/"
           SCRIPT_BEFORE: |
-            echo "post"
+            source ~/.nvm/nvm.sh; npm install pm2 -g
           SCRIPT_AFTER: |
-            yarn
+            source ~/.nvm/nvm.sh; yarn
