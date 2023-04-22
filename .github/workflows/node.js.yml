@@ -41,3 +41,4 @@ jobs:
             source ~/.nvm/nvm.sh; npm install yarn -g
           SCRIPT_AFTER: |
             source ~/.nvm/nvm.sh; cd deploy && yarn;
+            pm2 reload ~/deploy/dist/src/index.js --name="bot"  --env=../../env
