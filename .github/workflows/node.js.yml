@@ -40,4 +40,4 @@ jobs:
             source ~/.nvm/nvm.sh; npm install pm2 -g
             source ~/.nvm/nvm.sh; npm install yarn -g
           SCRIPT_AFTER: |
-            source ~/.nvm/nvm.sh; yarn
+            source ~/.nvm/nvm.sh; cd deploy && yarn;
