@@ -6,4 +6,3 @@ data
 *.log
 .env
 logs
-*.lock
