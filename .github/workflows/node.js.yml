@@ -37,6 +37,6 @@ jobs:
           TARGET: ${{ secrets.TARGET_DIR }}
           EXCLUDE: "/node_modules/"
           SCRIPT_BEFORE: |
-            killall node
+            echo "post"
           SCRIPT_AFTER: |
             yarn
