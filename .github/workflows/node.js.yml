@@ -33,10 +33,13 @@ jobs:
         uses: easingthemes/ssh-deploy@v4.1.8
         env:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-          SOURCE: "/dist"
           REMOTE_HOST: ${{ secrets.HOST_DNS }}
           REMOTE_USER: ${{ secrets.USERNAME }}
           TARGET: ${{ secrets.TARGET_DIR }}
           EXCLUDE: "/node_modules/"
           SCRIPT_BEFORE: |
+            npm install -g pm2
+            npm install yarn
             killall node
+          SCRIPT_AFTER: |
+            yarn
