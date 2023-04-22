@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import winston, { format, level, transports } from 'winston';
+import winston, { format, transports } from 'winston';
 
 export const logger = winston.createLogger({
 	format: format.combine(

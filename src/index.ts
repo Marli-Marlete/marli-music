@@ -1,4 +1,3 @@
-import { botStartup } from 'bot';
 import 'isomorphic-fetch';
 
 import express, {
@@ -12,6 +11,7 @@ import express, {
 import { join } from 'path';
 import { fileLogger, logger } from './config/winston';
 import { initConfigs } from './config';
+import { botStartup } from 'bot';
 
 initConfigs();
 botStartup();
