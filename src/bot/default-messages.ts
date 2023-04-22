@@ -1,3 +1,4 @@
+import { sentryCapture } from '../config/sentry';
 import { Message } from 'discord.js';
 import * as dotenv from 'dotenv';
 dotenv.config();
@@ -30,4 +31,5 @@ export function sendCommandError(errorMessage: string, message: Message) {
 	message.reply({
 		content: errorMessage,
 	});
+	sentryCapture('command.error', new Error(errorMessage));
 }

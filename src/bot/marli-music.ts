@@ -4,6 +4,8 @@ import { Redis } from '@upstash/redis';
 
 import { CommandsHandler } from './commands-handler';
 import { BOT_MESSAGES } from './default-messages';
+import { sentryCapture } from '../config/sentry';
+import { logger } from '../config/winston';
 
 interface BotInfo {
 	prefix: string;
@@ -30,11 +32,16 @@ export class MarliMusic extends Client {
 			setInterval(this.healthCheck.bind(this), 120_000);
 		});
 
+		this.on('error', (error: Error) => {
+			logger.log('error', 'Bot Error', error);
+			sentryCapture('bot.error', error);
+		});
+
 		this.once('reconnecting', () => {
-			console.log('Reconnecting!');
+			logger.log('info', 'Bot Reconnecting!');
 		});
 		this.once('disconnect', () => {
-			console.log('Disconnect!');
+			logger.log('info', 'Bot Disconnect!');
 		});
 
 		this.on('messageCreate', async (message: Message) => {

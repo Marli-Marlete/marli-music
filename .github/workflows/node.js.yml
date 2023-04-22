@@ -12,11 +12,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: production
 
     strategy:
       matrix:
-        node-version: [18.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        node-version: [16.20.0]
 
     steps:
       - uses: actions/checkout@v3
@@ -27,3 +27,17 @@ jobs:
           cache: 'npm'
       - run: yarn
       - run: yarn build
+  
+      - name: ssh deploy
+        uses: easingthemes/ssh-deploy@v4.1.8
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.HOST_DNS }}
+          REMOTE_USER: ${{ secrets.USERNAME }}
+          TARGET: ${{ secrets.TARGET_DIR }}
+          EXCLUDE: ".git/, /node_modules/"
+          SCRIPT_BEFORE: |
+            source ~/.nvm/nvm.sh; npm install pm2 -g
+            source ~/.nvm/nvm.sh; npm install yarn -g
+          SCRIPT_AFTER: |
+            source ~/.nvm/nvm.sh; cd deploy && yarn;

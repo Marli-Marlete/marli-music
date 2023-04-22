@@ -1,5 +1,20 @@
-import express, { Express, Request, Response, Router } from 'express';
 import { botStartup } from 'bot';
+import 'isomorphic-fetch';
+
+import express, {
+	Express,
+	NextFunction,
+	Request,
+	Response,
+	Router,
+} from 'express';
+
+import { join } from 'path';
+import { fileLogger, logger } from './config/winston';
+import { initConfigs } from './config';
+
+initConfigs();
+botStartup();
 
 const server: Express = express();
 const router = Router();
@@ -7,8 +22,16 @@ server.use(router);
 
 const port = process.env.PORT || 3000;
 
-router.get('/', (_request: Request, response: Response) => {
-	return response.sendFile('./public/index.html', { root: '.' });
+router.get('/', (_request: Request, response: Response, next: NextFunction) => {
+	const options = {
+		root: join('public'),
+	};
+	return response.sendFile('index.html', options, (err) => {
+		if (err) {
+			next();
+			logger.log('error', err);
+		}
+	});
 });
 
 router.post('/health-check', (_request: Request, response: Response) => {
@@ -18,6 +41,5 @@ router.post('/health-check', (_request: Request, response: Response) => {
 });
 
 server.listen(port, () => {
-	botStartup();
-	console.log(`Server listening to: ${port}`);
+	fileLogger.log('info', `Server listening to: ${port}`);
 });
