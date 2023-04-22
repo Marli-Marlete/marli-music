@@ -38,5 +38,6 @@ jobs:
           EXCLUDE: "/node_modules/"
           SCRIPT_BEFORE: |
             source ~/.nvm/nvm.sh; npm install pm2 -g
+            npm install yarn -g
           SCRIPT_AFTER: |
-            source ~/.nvm/nvm.sh; yarn
+            yarn
