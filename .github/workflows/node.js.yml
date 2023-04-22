@@ -27,3 +27,16 @@ jobs:
           cache: 'npm'
       - run: yarn
       - run: yarn build
+  
+      - name: ssh deploy
+        uses: easingthemes/ssh-deploy@v4.1.8
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          SOURCE: "dist/"
+          REMOTE_HOST: ${{ secrets.HOST_DNS }}
+          REMOTE_USER: ${{ secrets.USERNAME }}
+          TARGET: ${{ secrets.TARGET_DIR }}
+          EXCLUDE: "/node_modules/"
+          SCRIPT_BEFORE: |
+            whoami
+            ls -al
