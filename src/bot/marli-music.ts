@@ -6,6 +6,7 @@ import { CommandsHandler } from './commands-handler';
 import { BOT_MESSAGES } from './default-messages';
 import { sentryCapture } from '../config/sentry';
 import { logger } from '../config/winston';
+import { ERRORS } from 'shared/errors';
 
 interface BotInfo {
 	prefix: string;
@@ -18,23 +19,24 @@ export class MarliMusic extends Client {
 	constructor(
 		private botInfo: BotInfo,
 		private handler: CommandsHandler,
-		private redis: Redis,
 		options?: ClientOptions,
 	) {
 		super(options);
 
 		this.prefix = botInfo.prefix;
 
-		this.login(this.botInfo.token);
+		this.login(this.botInfo.token).catch((reason) => {
+			logger.log('error', ERRORS.BOT_STARTUP_ERROR, reason);
+			sentryCapture(ERRORS.BOT_STARTUP_ERROR, new Error(reason));
+		});
 
 		this.once('ready', () => {
 			this.healthCheck();
-			setInterval(this.healthCheck.bind(this), 120_000);
 		});
 
 		this.on('error', (error: Error) => {
-			logger.log('error', 'Bot Error', error);
-			sentryCapture('bot.error', error);
+			logger.log('error', ERRORS.BOT_STARTUP_ERROR, error);
+			sentryCapture(ERRORS.BOT_STARTUP_ERROR, error);
 		});
 
 		this.once('reconnecting', () => {
@@ -50,7 +52,9 @@ export class MarliMusic extends Client {
 	}
 
 	public healthCheck() {
-		return `${this.user.username} online ${this.uptime}`;
+		const healthString = `${this.user.username} online ${this.uptime}`;
+		logger.log('debug', healthString);
+		return healthString;
 	}
 
 	private async onMessage(message: Message, botPrefix: string) {

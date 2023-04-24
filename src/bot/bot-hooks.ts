@@ -6,15 +6,34 @@ import {
 } from '@discordjs/voice';
 import { sentryCapture } from '../config/sentry';
 import { fileLogger, logger } from '../config/winston';
+import { SourceStream, makeAudioResource } from 'sources/source-stream';
+import { queue } from 'queue/queue';
+import { BOT_MESSAGES } from './default-messages';
+
+export async function playFromQueue(
+	sourceStream: SourceStream,
+	player: AudioPlayer,
+	channelId: string,
+) {
+	const list = queue.getList(channelId);
+	const firstItem = list.shift();
+	if (!firstItem) return;
+
+	queue.pop();
+
+	const audioData = await makeAudioResource(sourceStream, {
+		url: firstItem.url,
+		title: firstItem.title,
+	});
+	player.play(audioData);
+}
 
 export function startBotHooks(
 	connection: VoiceConnection,
+	sourceStream: SourceStream,
 	player: AudioPlayer,
+	channelId: string,
 ) {
-	connection.on('debug', (message) => {
-		logger.log('info', 'connection debug', message);
-	});
-
 	connection.on('error', (error: Error) => {
 		connection.rejoin();
 		fileLogger.log('error', 'connection error', error);
@@ -33,6 +52,10 @@ export function startBotHooks(
 		connection.destroy();
 	});
 
+	connection.on(VoiceConnectionStatus.Ready, async () => {
+		logger.log('debug', 'CONNECTION READY');
+	});
+
 	player.on('stateChange', (oldState, newState) => {
 		logger.log(
 			'info',
@@ -40,9 +63,9 @@ export function startBotHooks(
 		);
 	});
 
-	player.on(AudioPlayerStatus.Idle, () => {
-		if (connection.state.status !== VoiceConnectionStatus.Destroyed)
-			connection.destroy();
+	player.on(AudioPlayerStatus.Idle, async () => {
+		logger.log('debug', `PLAYER IS IDLE, MY CHANNEL ID: ${channelId}`);
+		playFromQueue(sourceStream, player, channelId);
 	});
 
 	player.on(AudioPlayerStatus.Playing, () => {

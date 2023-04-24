@@ -1,7 +1,6 @@
 {
-	"exclude": ["dist/", "node_modules"],
+	"exclude": ["dist/", "node_modules", "test", "vitest.config.js"],
 	"include": ["./src/**/*.ts", "./**/*.json"],
-
 	"compilerOptions": {
 		"module": "commonjs",
 		"declaration": true,
@@ -27,7 +26,7 @@
 		"paths": {
 			"@src/*": ["src/*"]
 		},
-		"types": ["node"]
+		"types": ["node", "@types/jest"]
 	},
 
 	"ts-node": {
