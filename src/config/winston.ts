@@ -1,35 +1,45 @@
 import dayjs from 'dayjs';
 import winston, { format, transports } from 'winston';
 
-export const logger = winston.createLogger({
-	format: format.combine(
-		format.json(),
-		format.timestamp(),
-		format.printf(({ timestamp, level, message }) => {
-			return `[${timestamp}] ${level}: ${message}`;
-		}),
-	),
-	level: 'debug',
-	transports: [new winston.transports.Console()],
-});
+class Logger {
+	private logger: winston.Logger;
+	constructor(private options: { saveToFile: boolean }) {
+		this.logger = this.makeLogger();
+	}
 
-const logsFolder = () => `logs/winston/${dayjs().format('MM-YYYY')}`;
-const logFile = () => `${dayjs().format('DD-MM-YYYY')}.log`;
+	public log(level: string, message: string, error?: Error) {
+		return this.logger.log(level, message, error);
+	}
 
-export const fileLogger = winston.createLogger({
-	format: format.combine(
-		format.json(),
-		format.timestamp(),
-		format.printf(({ timestamp, level, message }) => {
-			return `[${timestamp}] ${level}: ${message}`;
-		}),
-	),
-	level: 'debug',
-	transports: [
-		new winston.transports.Console(),
-		new transports.File({
-			dirname: logsFolder(),
-			filename: logFile(),
-		}),
-	],
-});
+	private makeLogger() {
+		return winston.createLogger({
+			format: format.combine(
+				format.json(),
+				format.timestamp(),
+				format.printf(({ timestamp, level, message }) => {
+					return `[${timestamp}] ${level}: ${message}`;
+				}),
+			),
+			level: 'debug',
+			transports: this.options.saveToFile
+				? [
+						new winston.transports.Console(),
+						new transports.File({
+							dirname: this.makeFolderName(),
+							filename: this.makeFileName(),
+						}),
+				  ]
+				: [new winston.transports.Console()],
+		});
+	}
+
+	private makeFolderName() {
+		return `logs/winston/${dayjs().format('MM-YYYY')}`;
+	}
+	private makeFileName() {
+		return `${dayjs().format('DD-MM-YYYY')}.log`;
+	}
+}
+
+export const logger = new Logger({ saveToFile: false });
+export const fileLogger = new Logger({ saveToFile: true });
