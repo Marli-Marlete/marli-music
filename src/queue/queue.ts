@@ -22,8 +22,8 @@ export class Queue {
 	}
 
 	add(_connection: string, value: StreamInfo) {
-		console.log('QUEUE', value);
 		this.data.list.push(value);
+		console.log('QUEUE', this.data.list);
 	}
 
 	pop() {
