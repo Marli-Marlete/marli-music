@@ -50,6 +50,8 @@ export class CommandsHandler {
 				channelId: voiceMember.channelId,
 				guildId: String(voiceMember.guild.id),
 			});
+			this.getPlayer();
+			console.log(typeof connection);
 			connection.subscribe(this.player);
 
 			this.getPlayer();
