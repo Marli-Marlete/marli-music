@@ -13,7 +13,7 @@ export class YtdlSourceStream implements SourceStream {
 			highWaterMark: 1 << 25,
 			quality: 'lowestaudio',
 		});
-		if (!stream) Promise.reject(ERRORS.RESULT_NOT_FOUND);
+		if (!stream) return Promise.reject(ERRORS.RESULT_NOT_FOUND);
 		return Promise.resolve(stream);
 	}
 
@@ -30,9 +30,9 @@ export class YtdlSourceStream implements SourceStream {
 		}));
 	}
 
-	async getStreamInfo(input: string) {
-		if (input.startsWith('https') && ytdl.validateURL(input)) {
-			const videoId = ytdl.getURLVideoID(input);
+	async getStreamInfo(url: string) {
+		if (url.startsWith('https') && ytdl.validateURL(url)) {
+			const videoId = ytdl.getURLVideoID(url);
 
 			const info = await ytdl.getInfo(videoId);
 
