@@ -1,7 +1,5 @@
 import { Client, ClientOptions, Message } from 'discord.js';
 
-import { Redis } from '@upstash/redis';
-
 import { CommandsHandler } from './commands-handler';
 import { BOT_MESSAGES } from './default-messages';
 import { sentryCapture } from '../config/sentry';

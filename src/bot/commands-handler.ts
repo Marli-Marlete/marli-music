@@ -1,11 +1,13 @@
-import { Message } from 'discord.js';
+import { Message } from 'discord.js'
 
 import {
 	AudioPlayer,
 	AudioPlayerStatus,
 	AudioResource,
+	createAudioResource,
 	getVoiceConnection,
 	joinVoiceChannel,
+	StreamType,
 	VoiceConnection,
 } from '@discordjs/voice';
 
@@ -14,7 +16,7 @@ import {
 	SourceStream,
 	StreamInfo,
 } from '../sources/source-stream';
-import { playFromQueue, startBotHooks } from './bot-hooks';
+import { BotHook } from './bot-hooks';
 import { BOT_MESSAGES, sendCommandError } from './default-messages';
 import { sentryCapture } from '../config/sentry';
 import { logger } from '../config/winston';
@@ -23,8 +25,10 @@ import { queue } from 'queue/queue';
 
 export class CommandsHandler {
 	private player: AudioPlayer;
+	private botHook: BotHook;
+	constructor(private sourceStream: SourceStream) {
 
-	constructor(private sourceStream: SourceStream) {}
+	}
 
 	public async search(message: Message, input: string) {
 		try {
@@ -40,8 +44,38 @@ export class CommandsHandler {
 	}
 
 	public async play(message: Message, input: string) {
+		
+			
+		if (!this.validateInput(message, input)) return;
+
+		const voiceMember = message.member.voice;
+
+		const connection = joinVoiceChannel({
+			adapterCreator: voiceMember.guild.voiceAdapterCreator,
+			channelId: voiceMember.channelId,
+			guildId: String(voiceMember.guild.id),
+		});
+		this.getPlayer();
+
+		this.botHook = new BotHook(connection, this.sourceStream, this.player, voiceMember.channelId);
+		this.botHook.startBotHooks();
+
 		try {
-			if (!this.validateInput(message, input)) return;
+			const video = await this.sourceStream.getStreamFromUrl(input);
+
+			const searchResult = video ?? (await this.sourceStream.search(input));
+
+			const stream = await this.sourceStream.getStream(
+				video?.url ?? searchResult[0].url,
+			);
+
+			const resource = createAudioResource(stream, {
+				inputType: StreamType.Opus,
+			});
+
+			if (!resource.readable) throw new Error (ERRORS.RESOURCE_ERROR)
+			
+			logger.log("info", `valid resource:${resource.readable}`)
 
 			const voiceMember = message.member.voice;
 
@@ -58,14 +92,9 @@ export class CommandsHandler {
 			const streamInfo = await this.getStream(message, input);
 			queue.add(voiceMember.channelId, streamInfo);
 
-			startBotHooks(
-				connection,
-				this.sourceStream,
-				this.player,
-				voiceMember.channelId,
-			);
+			
 			if (this.player.state.status === AudioPlayerStatus.Idle)
-				playFromQueue(this.sourceStream, this.player, voiceMember.channelId);
+				this.botHook.playFromQueue(this.sourceStream, this.player, voiceMember.channelId);
 		} catch (err) {
 			console.log('play error', err);
 		}
@@ -121,7 +150,7 @@ export class CommandsHandler {
 		return getVoiceConnection(message.member.voice.guild.id);
 	}
 
-	private validateInput(message: Message, input: string) {
+	public validateInput(message: Message, input: string) {
 		if (input.length > 1) return true;
 		message.reply({ content: BOT_MESSAGES.INVALID_INPUT_MESSAGE });
 		return false;
@@ -129,7 +158,7 @@ export class CommandsHandler {
 
 	async getStream(message: Message, input: string): Promise<StreamInfo> {
 		try {
-			const video = await this.sourceStream.getStreamInfo(input);
+			const video = await this.sourceStream.getStreamFromUrl(input);
 
 			const searchResult = video ?? (await this.sourceStream.search(input));
 
@@ -140,7 +169,6 @@ export class CommandsHandler {
 				title: video?.title || searchResult[0].title,
 			};
 
-			console.log('STREAM INFO', info);
 			return info;
 		} catch (err) {
 			logger.log('error', ERRORS.RESULT_NOT_FOUND, err);

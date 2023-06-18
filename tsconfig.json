@@ -24,7 +24,8 @@
 		"noFallthroughCasesInSwitch": false,
 		"outDir": "./dist",
 		"paths": {
-			"@src/*": ["src/*"]
+			"@src/*": ["src/*"],
+			"@test/*": ["test/*"]
 		},
 		"types": ["node", "@types/jest"]
 	},

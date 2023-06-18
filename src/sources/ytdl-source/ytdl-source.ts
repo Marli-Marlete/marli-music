@@ -1,9 +1,9 @@
 import { Readable } from 'node:stream';
 import yts from 'yt-search';
-import ytdl from 'ytdl-core';
+import ytdl, {validateURL, getInfo, getURLVideoID} from 'ytdl-core';
 
-import { ERRORS } from '../../shared/errors';
-import { ResultAudioSearch, SourceStream } from '../source-stream';
+import { ERRORS } from '../../shared/errors'
+import { ResultAudioSearch, SourceStream } from '../source-stream'
 
 export class YtdlSourceStream implements SourceStream {
 	async getStream(url: string): Promise<Readable> {
@@ -13,7 +13,7 @@ export class YtdlSourceStream implements SourceStream {
 			highWaterMark: 1 << 25,
 			quality: 'lowestaudio',
 		});
-		if (!stream) Promise.reject(ERRORS.RESULT_NOT_FOUND);
+		if (!stream) return Promise.reject(ERRORS.RESULT_NOT_FOUND);
 		return Promise.resolve(stream);
 	}
 
@@ -30,16 +30,22 @@ export class YtdlSourceStream implements SourceStream {
 		}));
 	}
 
-	async getStreamInfo(input: string) {
-		if (input.startsWith('https') && ytdl.validateURL(input)) {
-			const videoId = ytdl.getURLVideoID(input);
+	async getStreamFromUrl(input: string) {
+		if (input.startsWith('https') && validateURL(input)) {
+			const videoId = getURLVideoID(input);
 
-			const info = await ytdl.getInfo(videoId);
+			const info = await getInfo(videoId);
 
 			return {
 				title: info.player_response.videoDetails.title,
 				url: info.videoDetails.video_url,
 			};
 		}
+		return Promise.reject(ERRORS.RESULT_NOT_FOUND);
+	}
+
+	async validate(url: string): Promise<boolean> {
+		// implementation pending
+		return (Boolean(url))
 	}
 }
