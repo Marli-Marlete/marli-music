@@ -1,19 +1,15 @@
-import { Message } from 'discord.js';
+import { Message } from 'discord.js'
 
 import {
-	AudioPlayer,
-	createAudioResource,
-	getVoiceConnection,
-	joinVoiceChannel,
-	StreamType,
-} from '@discordjs/voice';
+    AudioPlayer, createAudioResource, getVoiceConnection, joinVoiceChannel, StreamType
+} from '@discordjs/voice'
 
-import { SourceStream } from '../sources/source-stream';
-import { startBotHooks } from './bot-hooks';
-import { BOT_MESSAGES, sendCommandError } from './default-messages';
-import { sentryCapture } from '../config/sentry';
-import { logger } from '../config/winston';
-import { ERRORS } from '../shared/errors';
+import { sentryCapture } from '../config/sentry'
+import { logger } from '../config/winston'
+import { ERRORS } from '../shared/errors'
+import { SourceStream } from '../sources/source-stream'
+import { startBotHooks } from './bot-hooks'
+import { BOT_MESSAGES, sendCommandError } from './default-messages'
 
 export class CommandsHandler {
 	private player: AudioPlayer;
@@ -48,8 +44,7 @@ export class CommandsHandler {
 		startBotHooks(connection, this.player);
 
 		try {
-			
-			const video = await this.sourceStream.getStreamInfo(input);
+			const video = await this.sourceStream.getStreamFromUrl(input);
 
 			const searchResult = video ?? (await this.sourceStream.search(input));
 
@@ -58,13 +53,13 @@ export class CommandsHandler {
 			);
 
 			const resource = createAudioResource(stream, {
-				inputType: StreamType.Arbitrary,
+				inputType: StreamType.Opus,
 			});
 
 			if (!resource.readable) throw new Error (ERRORS.RESOURCE_ERROR)
 			
 			this.player.play(resource)
-			logger.log("info", `valid reource:${resource.readable}`)
+			logger.log("info", `valid resource:${resource.readable}`)
 
 			const subscription = connection.subscribe(this.player);
 
