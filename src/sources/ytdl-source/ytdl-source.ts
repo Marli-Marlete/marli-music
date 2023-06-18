@@ -2,8 +2,8 @@ import { Readable } from 'node:stream';
 import yts from 'yt-search';
 import ytdl, { getInfo, getURLVideoID, validateURL } from 'ytdl-core';
 
-import { ERRORS } from '../../shared/errors';
-import { ResultAudioSearch, SourceStream } from '../source-stream';
+import { ERRORS } from '../../shared/errors'
+import { ResultAudioSearch, SourceStream } from '../source-stream'
 
 export class YtdlSourceStream implements SourceStream {
 	async getStream(url: string): Promise<Readable> {
@@ -30,10 +30,11 @@ export class YtdlSourceStream implements SourceStream {
 		}));
 	}
 
-	async getStreamInfo(url: string) {
-		if (url.startsWith('https') && validateURL(url)) {
-			const videoId = getURLVideoID(url);
-			const info = await getInfo(videoId);
+	async getStreamFromUrl(input: string) {
+		if (input.startsWith('https') && ytdl.validateURL(input)) {
+			const videoId = ytdl.getURLVideoID(input);
+
+			const info = await ytdl.getInfo(videoId);
 
 			return {
 				title: info.player_response.videoDetails.title,
@@ -41,5 +42,10 @@ export class YtdlSourceStream implements SourceStream {
 			};
 		}
 		return Promise.reject(ERRORS.RESULT_NOT_FOUND);
+	}
+
+	async validate(url: string): Promise<boolean> {
+		// implementation pending
+		return (Boolean(url))
 	}
 }

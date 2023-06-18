@@ -1,4 +1,4 @@
-import { Message } from 'discord.js';
+import { Message } from 'discord.js'
 
 import {
 	AudioPlayer,
@@ -50,8 +50,7 @@ export class CommandsHandler {
 		this.botHook.startBotHooks();
 
 		try {
-			
-			const video = await this.sourceStream.getStreamInfo(input);
+			const video = await this.sourceStream.getStreamFromUrl(input);
 
 			const searchResult = video ?? (await this.sourceStream.search(input));
 
@@ -60,13 +59,13 @@ export class CommandsHandler {
 			);
 
 			const resource = createAudioResource(stream, {
-				inputType: StreamType.Arbitrary,
+				inputType: StreamType.Opus,
 			});
 
 			if (!resource.readable) throw new Error (ERRORS.RESOURCE_ERROR)
 			
 			this.player.play(resource)
-			logger.log("info", `valid reource:${resource.readable}`)
+			logger.log("info", `valid resource:${resource.readable}`)
 
 			const subscription = connection.subscribe(this.player);
 
