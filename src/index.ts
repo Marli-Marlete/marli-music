@@ -1,26 +1,21 @@
-import 'isomorphic-fetch';
+import 'isomorphic-fetch'
 
-import express, {
-	Express,
-	NextFunction,
-	Request,
-	Response,
-	Router,
-} from 'express';
-import { Redis } from '@upstash/redis';
-import { CommandsHandler } from './bot/commands-handler';
-import { MarliMusic } from './bot/marli-music';
-import { YtdlSourceStream } from './sources/ytdl-source/ytdl-source';
-import { join } from 'path';
-import { fileLogger, logger } from './config/winston';
-import { initConfigs } from './config';
+import express, { Express, NextFunction, Request, Response, Router } from 'express'
+import { join } from 'path'
+
+import { Redis } from '@upstash/redis'
+
+import { CommandsHandler } from './bot/commands-handler'
+import { MarliMusic } from './bot/marli-music'
+import { initConfigs } from './config'
+import { fileLogger, logger } from './config/winston'
+import { PlayDlSourceStream } from './sources/play-dl-source/play-dl.source'
 
 initConfigs();
-
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const BOT_PREFIX = process.env.BOT_PREFIX;
 
-const botHandler = new CommandsHandler(new YtdlSourceStream());
+const botHandler = new CommandsHandler(new PlayDlSourceStream());
 
 const redis = new Redis({
 	token: process.env.REDIS_TOKEN,
