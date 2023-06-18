@@ -29,7 +29,7 @@ router.get('/', (_request: Request, response: Response, next: NextFunction) => {
 	return response.sendFile('index.html', options, (err) => {
 		if (err) {
 			next();
-			logger.log('error', err);
+			logger.log('error', 'http-error', err);
 		}
 	});
 });

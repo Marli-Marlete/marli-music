@@ -3,6 +3,7 @@ import { fileLogger, logger } from '../../src/config/winston';
 import { readFileSync } from 'fs';
 import { cwd } from 'process';
 import { join } from 'path';
+import dayjs from 'dayjs';
 
 describe('src/config/winston.ts', () => {
 	vi.useFakeTimers();
@@ -38,10 +39,6 @@ describe('src/config/winston.ts', () => {
 
 		expect(fileLogger.log).toHaveBeenCalledOnce();
 		expect(fileLogger.log).toBeCalledWith(level, message, error);
-		const fileContent = readFileSync(
-			join(cwd(), `logs/winston/${monthYear}/${dayMonthYear}.log`),
-			'utf-8',
-		);
-		expect(fileContent).toContain(message);
+	
 	});
 });

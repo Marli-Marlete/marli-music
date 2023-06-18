@@ -9,7 +9,7 @@ import {
 } from '@discordjs/voice';
 
 import { SourceStream } from '../sources/source-stream';
-import { startBotHooks } from './bot-hooks';
+import { BotHook } from './bot-hooks';
 import { BOT_MESSAGES, sendCommandError } from './default-messages';
 import { sentryCapture } from '../config/sentry';
 import { logger } from '../config/winston';
@@ -17,8 +17,10 @@ import { ERRORS } from '../shared/errors';
 
 export class CommandsHandler {
 	private player: AudioPlayer;
+	private botHook: BotHook;
+	constructor(private sourceStream: SourceStream) {
 
-	constructor(private sourceStream: SourceStream) {}
+	}
 
 	public async search(message: Message, input: string) {
 		try {
@@ -44,8 +46,8 @@ export class CommandsHandler {
 			guildId: String(voiceMember.guild.id),
 		});
 		this.getPlayer();
-
-		startBotHooks(connection, this.player);
+		this.botHook = new BotHook(connection, this.player);
+		this.botHook.startBotHooks();
 
 		try {
 			
@@ -130,7 +132,7 @@ export class CommandsHandler {
 		return getVoiceConnection(message.member.voice.guild.id);
 	}
 
-	private validateInput(message: Message, input: string) {
+	public validateInput(message: Message, input: string) {
 		if (input.length > 1) return true;
 		message.reply({ content: BOT_MESSAGES.INVALID_INPUT_MESSAGE });
 		return false;

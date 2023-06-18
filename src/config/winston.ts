@@ -1,4 +1,6 @@
 import dayjs from 'dayjs';
+import { join } from 'path';
+import { cwd } from 'process';
 import winston, { format, transports } from 'winston';
 
 class Logger {
@@ -34,7 +36,7 @@ class Logger {
 	}
 
 	private makeFolderName() {
-		return `logs/winston/${dayjs().format('MM-YYYY')}`;
+		return  join(cwd(), `logs/winston/${dayjs().format('MM-YYYY')}`);
 	}
 	private makeFileName() {
 		return `${dayjs().format('DD-MM-YYYY')}.log`;

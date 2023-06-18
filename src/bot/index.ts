@@ -1,6 +1,5 @@
 import 'isomorphic-fetch';
 import * as dotenv from 'dotenv';
-import { Redis } from '@upstash/redis';
 
 import { CommandsHandler } from './commands-handler';
 import { MarliMusic } from './marli-music';
@@ -14,18 +13,12 @@ export function botStartup() {
 
 	const botHandler = new CommandsHandler(new YtdlSourceStream());
 
-	const redis = new Redis({
-		token: process.env.REDIS_TOKEN,
-		url: process.env.REDIS_URL,
-	});
-
 	return new MarliMusic(
 		{
 			prefix: BOT_PREFIX,
 			token: BOT_TOKEN,
 		},
 		botHandler,
-		redis,
 		{
 			intents: [
 				'Guilds',

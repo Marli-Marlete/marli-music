@@ -1,7 +1,17 @@
-import { afterAll, describe, it, vi } from 'vitest';
+import { afterAll, describe, expect, it, vi } from 'vitest';
+import { BOT_MESSAGES } from '../../src/bot/default-messages';
 
 describe('src/bot/default-messages.ts', () => {
 	afterAll(() => {
 		vi.clearAllMocks();
 	});
+
+	describe('BOT_MESSAGES', () => {
+		
+		it('should return BOT_MESSAGES', () => {
+			const msg = BOT_MESSAGES.INVALID_COMMAND;
+			expect(msg).toBeDefined();
+
+		});
+	})
 });

@@ -7,50 +7,53 @@ import {
 import { sentryCapture } from '../config/sentry';
 import { fileLogger, logger } from '../config/winston';
 
-export function startBotHooks(
-	connection: VoiceConnection,
-	player: AudioPlayer,
-) {
-	connection.on('debug', (message) => {
-		logger.log('info', 'connection debug', message);
-	});
 
-	connection.on('error', (error: Error) => {
-		connection.rejoin();
-		fileLogger.log('error', 'connection error', error);
-		sentryCapture('connection.error', error);
-	});
+export class BotHook {
 
-	connection.on('stateChange', (oldState, newState) => {
-		logger.log(
-			'info',
-			`connection changes from ${oldState.status} to ${newState.status} `,
-		);
-	});
+	constructor(private connection: VoiceConnection, private player: AudioPlayer) {}
 
-	connection.on(VoiceConnectionStatus.Disconnected, () => {
-		logger.log('info', 'disconnect');
-		connection.destroy();
-	});
+  	startBotHooks(): void {
+		this.connection.on('debug', (message) => {
+			logger.log('info', 'connection debug' + message );
+		});
 
-	player.on('stateChange', (oldState, newState) => {
-		logger.log(
-			'info',
-			`audio player changes from ${oldState.status} to ${newState.status}`,
-		);
-	});
+		this.connection.on('error', (error: Error) => {
+			this.connection.rejoin();
+			fileLogger.log('error', 'connection error', error);
+			sentryCapture('connection.error', error);
+		});
 
-	player.on(AudioPlayerStatus.Idle, () => {
-		if (connection.state.status !== VoiceConnectionStatus.Destroyed)
-			connection.destroy();
-	});
+		this.connection.on('stateChange', (oldState, newState) => {
+			logger.log(
+				'info',
+				`connection changes from ${oldState.status} to ${newState.status} `,
+			);
+		});
 
-	player.on(AudioPlayerStatus.Playing, () => {
-		logger.log('info', 'Audio Player is currently playing');
-	});
+		this.connection.on(VoiceConnectionStatus.Disconnected, () => {
+			logger.log('info', 'disconnect');
+			this.connection.destroy();
+		});
 
-	player.on('error', (error: Error) => {
-		fileLogger.log('error', 'audio player error', error);
-		sentryCapture('player.error', error);
-	});
+		this.player.on('stateChange', (oldState, newState) => {
+			logger.log(
+				'info',
+				`audio player changes from ${oldState.status} to ${newState.status}`,
+			);
+		});
+
+		this.player.on(AudioPlayerStatus.Idle, () => {
+			if (this.connection.state.status !== VoiceConnectionStatus.Destroyed)
+				this.connection.destroy();
+		});
+
+		this.player.on(AudioPlayerStatus.Playing, () => {
+			logger.log('info', 'Audio Player is currently playing');
+		});
+
+		this.player.on('error', (error: Error) => {
+			fileLogger.log('error', 'audio player error', error);
+			sentryCapture('player.error', error);
+		});
+	}
 }
