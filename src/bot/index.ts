@@ -3,7 +3,7 @@ import * as dotenv from 'dotenv';
 
 import { CommandsHandler } from './commands-handler';
 import { MarliMusic } from './marli-music';
-import { PlayDlSourceStream } from 'sources/play-dl-source/play-dl-source';
+import { PlayDlSourceStream } from '../sources/play-dl-source/play-dl-source';
 
 dotenv.config();
 
