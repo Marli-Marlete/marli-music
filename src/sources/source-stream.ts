@@ -1,4 +1,4 @@
-import { Readable } from 'node:stream';
+import { Readable } from 'node:stream'
 
 export interface Queue {
 	items: number;
@@ -16,8 +16,13 @@ export interface StreamInfo {
 	title: string;
 }
 
+export interface SerachOptionsParams {
+	limit?: number
+}
+
 export interface SourceStream {
 	getStream(url: string): Readable | Promise<Readable>;
-	search(input: string): ResultAudioSearch[] | Promise<ResultAudioSearch[]>;
-	getStreamInfo(input: string): Promise<StreamInfo>;
+	search(input: string, options?: SerachOptionsParams): ResultAudioSearch[] | Promise<ResultAudioSearch[]>;
+	getStreamFromUrl(url: string): Promise<StreamInfo>;
+	validate(input: string): Promise<boolean>
 }
