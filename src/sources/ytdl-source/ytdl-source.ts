@@ -31,7 +31,6 @@ export class YtdlSourceStream implements SourceStream {
 	}
 
 	async getStreamFromUrl(input: string) {
-		console.log(ytdl("dasdlasdlaldsl"))
 		if (input.startsWith('https') && validateURL(input)) {
 			const videoId = getURLVideoID(input);
 
