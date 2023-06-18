@@ -1,21 +1,27 @@
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi, beforeAll, afterAll, beforeEach, afterEach} from 'vitest';
 import { Readable } from 'stream';
 import { ERRORS } from '../../../src/shared/errors';
 import { mockVideoUrl, setupYtdlStub } from './ytdl-mocks';
 
 import { YtdlSourceStream } from '../../../src/sources/ytdl-source/ytdl-source';
 
-describe('src/sources/ytdl-source/ytdl-source-stream.ts', () => {
-	beforeAll(() => {
-		setupYtdlStub();
-	});
 
-	afterAll(() => {
+
+describe('src/sources/ytdl-source/ytdl-source-stream.ts', () => {
+	
+    beforeAll(() => {
+        setupYtdlStub
+    })
+
+    afterAll(() => {
 		vi.resetAllMocks();
 		vi.clearAllMocks();
+        vi.restoreAllMocks
 	});
 
+
 	describe('getStream()', () => {
+    
 		it('should run getStream correctly', async () => {
 			const ytdlSource = new YtdlSourceStream();
 			const stream = await ytdlSource.getStream(mockVideoUrl);
@@ -31,7 +37,8 @@ describe('src/sources/ytdl-source/ytdl-source-stream.ts', () => {
 		});
 	});
 
-	describe('getStreamInfo()', () => {
+	describe('getStreamFromUrl()', () => {
+
 		it('should return youtube video results', async () => {
 			const ytdlSource = new YtdlSourceStream();
 			const results = await ytdlSource.search('test');
@@ -47,16 +54,20 @@ describe('src/sources/ytdl-source/ytdl-source-stream.ts', () => {
 	});
 
 	describe('search()', () => {
-		it('should run getStreamInfo() ', async () => {
+
+        
+		it('should run getStreamFromUrl() ', async () => {
+        
 			const source = new YtdlSourceStream();
-			const results = await source.getStreamInfo(mockVideoUrl);
+			const results = await source.getStreamFromUrl(mockVideoUrl);
 			expect(results).toBeDefined();
 		});
 
 		it('should return undefined due to invalid url', async () => {
+			
 			const source = new YtdlSourceStream();
 			await source
-				.getStreamInfo('www.invalid-yt-url')
+				.getStreamFromUrl('www.invalid-yt-url')
 				.catch((reason) => expect(reason).toEqual(ERRORS.RESULT_NOT_FOUND));
 		});
 	});

@@ -1,6 +1,6 @@
 import { Readable } from 'node:stream';
 import yts from 'yt-search';
-import ytdl, { getInfo, getURLVideoID, validateURL } from 'ytdl-core';
+import ytdl, {validateURL, getInfo, getURLVideoID} from 'ytdl-core';
 
 import { ERRORS } from '../../shared/errors'
 import { ResultAudioSearch, SourceStream } from '../source-stream'
@@ -31,10 +31,11 @@ export class YtdlSourceStream implements SourceStream {
 	}
 
 	async getStreamFromUrl(input: string) {
-		if (input.startsWith('https') && ytdl.validateURL(input)) {
-			const videoId = ytdl.getURLVideoID(input);
+		console.log(ytdl("dasdlasdlaldsl"))
+		if (input.startsWith('https') && validateURL(input)) {
+			const videoId = getURLVideoID(input);
 
-			const info = await ytdl.getInfo(videoId);
+			const info = await getInfo(videoId);
 
 			return {
 				title: info.player_response.videoDetails.title,
