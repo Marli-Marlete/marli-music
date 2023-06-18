@@ -1,73 +1,11 @@
 import 'isomorphic-fetch'
 
-import express, { Express, NextFunction, Request, Response, Router } from 'express'
-import { join } from 'path'
 
-import { Redis } from '@upstash/redis'
-
-import { CommandsHandler } from './bot/commands-handler'
-import { MarliMusic } from './bot/marli-music'
-import { initConfigs } from './config'
-import { fileLogger, logger } from './config/winston'
-import { PlayDlSourceStream } from './sources/play-dl-source/play-dl.source'
+import { initConfigs } from './config';
+import { botStartup } from 'bot';
+import { startServer } from './http';
 
 initConfigs();
-const BOT_TOKEN = process.env.BOT_TOKEN;
-const BOT_PREFIX = process.env.BOT_PREFIX;
+botStartup();
+startServer()
 
-const botHandler = new CommandsHandler(new PlayDlSourceStream());
-
-const redis = new Redis({
-	token: process.env.REDIS_TOKEN,
-	url: process.env.REDIS_URL,
-});
-
-new MarliMusic(
-	{
-		prefix: BOT_PREFIX,
-		token: BOT_TOKEN,
-	},
-	botHandler,
-	redis,
-	{
-		intents: [
-			'Guilds',
-			'GuildMessages',
-			'MessageContent',
-			'GuildVoiceStates',
-			'DirectMessageReactions',
-			'GuildEmojisAndStickers',
-			'GuildMembers',
-			'GuildMessageTyping',
-			'GuildMessageReactions',
-		],
-	},
-);
-
-const server: Express = express();
-const router = Router();
-server.use(router);
-
-const port = process.env.PORT || 3000;
-
-router.get('/', (_request: Request, response: Response, next: NextFunction) => {
-	const options = {
-		root: join('public'),
-	};
-	return response.sendFile('index.html', options, (err) => {
-		if (err) {
-			next();
-			logger.log('error', err);
-		}
-	});
-});
-
-router.post('/health-check', (_request: Request, response: Response) => {
-	return response.json({
-		message: 'Ok',
-	});
-});
-
-server.listen(port, () => {
-	fileLogger.log('info', `Server listening to: ${port}`);
-});

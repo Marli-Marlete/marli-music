@@ -6,4 +6,5 @@ data
 *.log
 .env
 logs
+coverage
 .data
