@@ -3,7 +3,6 @@ import { mainRouter } from './routes';
 import { logger } from '../config/winston';
 
 let appServer: Application = express();
-let httpServer: Server;
 
 function startServer() {
 	const port = process.env.PORT || 3000;
