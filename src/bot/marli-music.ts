@@ -1,22 +1,34 @@
+import { SourceStream } from './../sources/source-stream';
 import { Client, ClientOptions, Message } from 'discord.js';
-
-import { CommandsHandler } from './commands-handler';
-import { BOT_MESSAGES } from './default-messages';
+import { BOT_MESSAGES } from './containts/default-messages';
 import { sentryCapture } from '../config/sentry';
 import { logger } from '../config/winston';
 import { ERRORS } from 'shared/errors';
+import { Queue } from 'queue/queue';
+import { Search, Play, Pause, Resume, Stop, Command } from './commands/';
+import { AudioPlayer } from '@discordjs/voice';
 
-interface BotInfo {
+export interface BotInfo {
 	prefix: string;
 	token: string;
 }
 
+export const ALL_COMMANDS: Record<string, any> = {
+	pause: Pause,
+	play: Play,
+	resume: Resume,
+	search: Search,
+	stop: Stop,
+};
+
 export class MarliMusic extends Client {
 	prefix: string;
+	players: Map<string, AudioPlayer> = new Map();
 
 	constructor(
 		private botInfo: BotInfo,
-		private handler: CommandsHandler,
+		public sourceStream: SourceStream,
+		public queue: Queue,
 		options?: ClientOptions,
 	) {
 		super(options);
@@ -37,13 +49,6 @@ export class MarliMusic extends Client {
 			sentryCapture(ERRORS.BOT_STARTUP_ERROR, error);
 		});
 
-		this.once('reconnecting', () => {
-			logger.log('info', 'Bot Reconnecting!');
-		});
-		this.once('disconnect', () => {
-			logger.log('info', 'Bot Disconnect!');
-		});
-
 		this.on('messageCreate', async (message: Message) => {
 			this.onMessage(message, this.prefix);
 		});
@@ -55,6 +60,22 @@ export class MarliMusic extends Client {
 		return healthString;
 	}
 
+	public addPlayer(connection: string) {
+		this.players.set(connection, new AudioPlayer());
+	}
+
+	public getPlayer(connection: string) {
+		if (!this.players.has(connection)) {
+			this.addPlayer(connection);
+		}
+
+		return this.players.get(connection);
+	}
+
+	public removePlayer(connection: string) {
+		this.players.delete(connection);
+	}
+
 	private async onMessage(message: Message, botPrefix: string) {
 		if (message.author.bot) return;
 		if (!message.content.startsWith(botPrefix)) return;
@@ -62,27 +83,17 @@ export class MarliMusic extends Client {
 
 		const args = message.content.split(' ');
 		const input = message.content.replace(args[0], '');
-		const command = args[0].replace(botPrefix, '');
+		const commandString = args[0].replace(botPrefix, '');
 
-		switch (command) {
-			case 'search':
-				this.handler.search(message, input);
-				break;
-			case 'play':
-				this.handler.play(message, input);
-				break;
-			case 'pause':
-				this.handler.pause(message);
-				break;
-			case 'resume':
-				this.handler.resume(message);
-				break;
-			case 'stop':
-				this.handler.stop(message);
-				break;
-			default:
-				message.reply(BOT_MESSAGES.INVALID_COMMAND);
-		}
+		if (!ALL_COMMANDS[commandString])
+			message.reply(BOT_MESSAGES.INVALID_COMMAND);
+
+		const command: Command = new ALL_COMMANDS[commandString](
+			this.sourceStream,
+			this.queue,
+		);
+
+		command.execute(this, message, input);
 	}
 
 	private validate(message: Message) {
