@@ -1,5 +1,4 @@
 import { AudioResource } from '@discordjs/voice';
-import { logger } from 'config/winston';
 import { StreamInfo } from 'sources/source-stream';
 
 export interface QueueData {

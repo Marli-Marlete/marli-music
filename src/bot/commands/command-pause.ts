@@ -8,7 +8,7 @@ export class Pause extends Command {
 		super(bot);
 		this.name = 'pause';
 	}
-	async execute(message: Message, _input: string): Promise<void> {
+	async execute(message: Message): Promise<void> {
 		if (this.getConnection(message)) {
 			const connectionID = message.member.voice.channelId;
 			const player = this.getPlayer(connectionID);

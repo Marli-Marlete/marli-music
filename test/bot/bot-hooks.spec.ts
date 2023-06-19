@@ -3,7 +3,7 @@ import { afterAll, describe, expect, it, vi } from 'vitest';
 import { BotHooks } from '../../src/bot/hooks/boot-hooks';
 import { LocalQueue } from '../../src/queue/queue';
 
-describe('src/bot/bot-hooks.ts', () => {
+describe('src/bot/hooks/bot-hooks.ts', () => {
 	afterAll(() => {
 		vi.clearAllMocks();
 	});
@@ -18,7 +18,9 @@ describe('src/bot/bot-hooks.ts', () => {
 				selfMute: false,
 			};
 			const connection: VoiceConnection = new VoiceConnection(joinConfig, {
-				adapterCreator: () => {},
+				adapterCreator: () => {
+					return;
+				},
 			} as any);
 			const player = new AudioPlayer();
 			const queue = new LocalQueue();

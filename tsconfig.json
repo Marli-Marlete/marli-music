@@ -27,7 +27,7 @@
 			"@src/*": ["src/*"],
 			"@test/*": ["test/*"]
 		},
-		"types": ["node", "@types/jest"]
+		"types": ["node"]
 	},
 
 	"ts-node": {

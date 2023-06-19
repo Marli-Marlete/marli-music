@@ -1,16 +1,14 @@
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { afterAll, describe, expect, it, vi } from 'vitest';
 import Sentry, { Transaction } from '@sentry/node';
 import { initSentry, sentryCapture } from '../../src/config/sentry';
 
 describe('src/config/sentry.ts', () => {
-	beforeAll(() => {});
-
 	afterAll(() => {
 		vi.clearAllMocks();
 	});
 
 	it('should run initSentry', () => {
-		const initSpy = vi.spyOn(Sentry, 'init').mockResolvedValueOnce();
+		vi.spyOn(Sentry, 'init').mockResolvedValueOnce();
 
 		const sentryDns = 'http://sentry-test.com?id=9213812';
 		process.env.SENTRY_DNS = sentryDns;
@@ -37,9 +35,7 @@ describe('src/config/sentry.ts', () => {
 				} as Transaction;
 			});
 
-		const captureSpy = vi
-			.spyOn(Sentry, 'captureException')
-			.mockImplementation(() => '');
+		vi.spyOn(Sentry, 'captureException').mockImplementation(() => '');
 
 		sentryCapture(name, testError);
 
