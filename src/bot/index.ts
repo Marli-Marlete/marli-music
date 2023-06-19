@@ -1,7 +1,7 @@
 import 'isomorphic-fetch';
 import { MarliMusic } from './marli-music';
-import { PlayDlSourceStream } from 'sources/play-dl-source/play-dl-source';
-import { LocalQueue } from 'queue/queue';
+import { PlayDlSourceStream } from '../sources/play-dl-source/play-dl-source';
+import { LocalQueue } from '../queue/queue';
 
 import * as dotenv from 'dotenv';
 dotenv.config();

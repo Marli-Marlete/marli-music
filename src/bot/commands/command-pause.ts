@@ -1,16 +1,18 @@
 import { Message } from 'discord.js';
+import { MarliMusic } from '../marli-music';
 import { Command } from './command';
-import { BOT_MESSAGES } from 'bot/containts/default-messages';
+import { BOT_MESSAGES } from '../containts/default-messages';
 
 export class Pause extends Command {
-	constructor() {
-		super();
+	constructor(bot: MarliMusic) {
+		super(bot);
 		this.name = 'pause';
 	}
-	async execute(message: Message, input: string): Promise<void> {
-		this.player = this.getPlayer();
+	async execute(message: Message, _input: string): Promise<void> {
 		if (this.getConnection(message)) {
-			this.player.pause();
+			const connectionID = message.member.voice.channelId;
+			const player = this.getPlayer(connectionID);
+			player.pause();
 			message.reply({
 				content: `${message.author.username} ${BOT_MESSAGES.MUSIC_PAUSED}`,
 			});

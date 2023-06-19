@@ -10,15 +10,13 @@ export interface QueueData {
 export abstract class Queue {
 	items: Map<string, QueueData[]> = new Map();
 
-	constructor() {
-		this.items = new Map();
-	}
-
-	abstract getList(_connection: string): QueueData[];
+	abstract getList(connection: string): QueueData[];
 
 	abstract add(connection: string, value: QueueData): void;
 
 	abstract pop(connection: string): void;
+
+	abstract clear(connection: string): void;
 }
 
 export class LocalQueue extends Queue {
@@ -26,26 +24,30 @@ export class LocalQueue extends Queue {
 		super();
 	}
 
-	getList(_connection: string): QueueData[] {
-		logger.log('debug', JSON.stringify(this.items));
-		return this.items.get(_connection);
+	getList(connectionID: string): QueueData[] {
+		return this.items.get(connectionID);
 	}
 
-	add(connection: string, value: QueueData) {
-		const connectionItems = this.items.get(connection);
-		console.log('ADDING TO QUEUE', connectionItems);
+	add(connectionID: string, value: QueueData) {
+		const connectionItems = this.getList(connectionID);
+
 		if (!connectionItems) {
-			this.items.set(connection, [value]);
+			this.items.set(connectionID, [value]);
 		} else {
 			connectionItems.push(value);
 		}
-		console.log('ADDING TO QUEUE', this.items.get(connection));
 	}
 
-	pop(connection: string) {
-		const connectionItems = this.items.get('connection');
+	pop(connectionID: string) {
+		const connectionItems = this.getList(connectionID);
 		connectionItems.shift();
-		this.items.set(connection, connectionItems);
-		console.log('POPPING TO QUEUE', this.items);
+		this.items.set(connectionID, connectionItems);
+	}
+
+	clear(connectionID: string): void {
+		const connectionItems = this.getList(connectionID);
+		if (connectionItems) {
+			this.items.set(connectionID, []);
+		}
 	}
 }

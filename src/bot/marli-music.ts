@@ -1,12 +1,12 @@
-import { SourceStream } from './../sources/source-stream';
 import { Client, ClientOptions, Message } from 'discord.js';
+import { AudioPlayer } from '@discordjs/voice';
+import { SourceStream } from './../sources/source-stream';
 import { BOT_MESSAGES } from './containts/default-messages';
 import { sentryCapture } from '../config/sentry';
 import { logger } from '../config/winston';
-import { ERRORS } from 'shared/errors';
-import { Queue } from 'queue/queue';
-import { Search, Play, Pause, Resume, Stop, Command } from './commands/';
-import { AudioPlayer } from '@discordjs/voice';
+import { ERRORS } from '../shared/errors';
+import { Queue } from '../queue/queue';
+import { Search, Play, Pause, Resume, Stop, Command, Skip } from './commands/';
 
 export interface BotInfo {
 	prefix: string;
@@ -18,6 +18,7 @@ export const ALL_COMMANDS: Record<string, any> = {
 	play: Play,
 	resume: Resume,
 	search: Search,
+	skip: Skip,
 	stop: Stop,
 };
 
@@ -79,36 +80,18 @@ export class MarliMusic extends Client {
 	private async onMessage(message: Message, botPrefix: string) {
 		if (message.author.bot) return;
 		if (!message.content.startsWith(botPrefix)) return;
-		if (!this.validate(message)) return;
 
 		const args = message.content.split(' ');
 		const input = message.content.replace(args[0], '');
 		const commandString = args[0].replace(botPrefix, '');
 
-		if (!ALL_COMMANDS[commandString])
+		if (!ALL_COMMANDS[commandString]) {
 			message.reply(BOT_MESSAGES.INVALID_COMMAND);
-
-		const command: Command = new ALL_COMMANDS[commandString](
-			this.sourceStream,
-			this.queue,
-		);
-
-		command.execute(this, message, input);
-	}
-
-	private validate(message: Message) {
-		const voiceChannel = message.member.voice.channel;
-		if (!voiceChannel) {
-			message.channel.send(BOT_MESSAGES.NOT_IN_A_VOICE_CHANNEL);
-			return false;
+			return;
 		}
 
-		const permissions = voiceChannel.permissionsFor(message.client.user);
+		const command: Command = new ALL_COMMANDS[commandString](this);
 
-		if (!permissions.has('Connect') || !permissions.has('Speak')) {
-			message.channel.send(BOT_MESSAGES.NO_PERMISSION_JOIN_SPEAK);
-			return false;
-		}
-		return true;
+		command.execute(message, input);
 	}
 }

@@ -1,14 +1,20 @@
 import { Message } from 'discord.js';
 import { Command } from './command';
-import { BOT_MESSAGES } from 'bot/containts/default-messages';
+import { BOT_MESSAGES } from '../containts/default-messages';
+import { MarliMusic } from '../marli-music';
 
 export class Stop extends Command {
-	constructor() {
-		super();
+	constructor(bot: MarliMusic) {
+		super(bot);
 		this.name = 'stop';
 	}
-	async execute(message: Message, input: string): Promise<void> {
-		this.player.stop();
+	async execute(message: Message): Promise<void> {
+		this.validate(message, 'stop');
+		const connectionID = message.member.voice.channelId;
+		const player = this.getPlayer(connectionID);
+		const queue = this.getQueue();
+		player.stop();
+		queue.clear(connectionID);
 		message.reply({
 			content: `${message.author.username} ${BOT_MESSAGES.MUSIC_STOPPED}`,
 		});

@@ -1,15 +1,16 @@
 import { Message } from 'discord.js';
+import { MarliMusic } from '../marli-music';
 import { SourceStream } from './../../sources/source-stream';
 import { Command } from './command';
-import { sendCommandError } from 'bot/containts/default-messages';
+import { sendCommandError } from '../containts/default-messages';
 
 export class Search extends Command {
 	name = 'search';
-	constructor(private source: SourceStream) {
-		super();
+	constructor(bot: MarliMusic, private source: SourceStream) {
+		super(bot);
 	}
-	async execute(message: Message) {
-		this.validate(message, message.content);
+	async execute(message: Message, input: string) {
+		this.validate(message, input);
 		try {
 			const searchResult = await this.source.search(message.content);
 			message.reply(JSON.stringify(searchResult));

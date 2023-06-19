@@ -27,6 +27,7 @@
 		"express": "^4.18.2",
 		"ffmpeg": "^0.0.4",
 		"fluent-ffmpeg": "^2.1.2",
+		"http": "^0.0.1-security",
 		"isomorphic-fetch": "^3.0.0",
 		"play-dl": "^1.9.6",
 		"winston": "^3.8.2",

@@ -1,12 +1,13 @@
+import { Message } from 'discord.js';
 import {
 	AudioPlayer,
 	AudioPlayerStatus,
 	VoiceConnection,
 	VoiceConnectionStatus,
 } from '@discordjs/voice';
-import { logger } from 'config/winston';
-import { Message } from 'discord.js';
-import { Queue } from 'queue/queue';
+import { BOT_MESSAGES } from '../containts/default-messages';
+import { logger } from '../../config/winston';
+import { Queue } from '../../queue/queue';
 
 export class BotHooks {
 	constructor(
@@ -18,15 +19,26 @@ export class BotHooks {
 
 	startHooks() {
 		this.player.on('error', (error: Error) => {
-			console.log('player error', error);
+			logger.log('debug', 'player error', error);
 		});
 
 		this.player.on(AudioPlayerStatus.Idle, async () => {
-			const items = this.queue.getList(this.message.channelId);
-			if (!items) return;
-			const next = items.shift();
-			this.player.play(next.audioResource);
-			this.queue.pop(this.message.channelId);
+			const connectionID = this.message.member.voice.channelId;
+			const items = this.queue.getList(connectionID);
+
+			if (!items.length) {
+				this.message.reply({
+					content: `${BOT_MESSAGES.PLAYLIST_ENDED} Bye!`,
+				});
+				this.connection.destroy();
+			} else {
+				const next = items[0];
+				this.message.reply({
+					content: `${this.message.author.username} ${BOT_MESSAGES.CURRENT_PLAYING} ${next.streamInfo.title}`,
+				});
+				this.player.play(next.audioResource);
+				this.queue.pop(connectionID);
+			}
 		});
 
 		this.connection.on('error', (error: Error) => {

@@ -1,9 +1,9 @@
 import express, { Application } from 'express';
+import { Server } from 'http';
 import { mainRouter } from './routes';
 import { logger } from '../config/winston';
-import { Server } from 'http';
 
-let appServer: Application = express();
+const appServer: Application = express();
 let httpServer: Server;
 
 function startServer() {

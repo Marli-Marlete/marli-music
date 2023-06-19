@@ -18,6 +18,7 @@ describe('src/config/sentry.ts', () => {
 		expect(Sentry.init).toHaveBeenCalledOnce();
 		expect(Sentry.init).toHaveBeenCalledWith({
 			dsn: sentryDns,
+			environment: 'test',
 			tracesSampleRate: 1.0,
 		});
 	});
