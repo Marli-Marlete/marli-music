@@ -36,7 +36,7 @@ class Logger {
 	}
 
 	private makeFolderName() {
-		return  join(cwd(), `logs/winston/${dayjs().format('MM-YYYY')}`);
+		return join(cwd(), `logs/winston/${dayjs().format('MM-YYYY')}`);
 	}
 	private makeFileName() {
 		return `${dayjs().format('DD-MM-YYYY')}.log`;

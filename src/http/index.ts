@@ -1,8 +1,10 @@
 import express, { Application } from 'express';
+import { Server } from 'http';
 import { mainRouter } from './routes';
 import { logger } from '../config/winston';
 
-let appServer: Application = express();
+const appServer: Application = express();
+let httpServer: Server;
 
 function startServer() {
 	const port = process.env.PORT || 3000;
@@ -12,4 +14,4 @@ function startServer() {
 	});
 }
 
-export { appServer, startServer };
+export { appServer, httpServer, startServer };

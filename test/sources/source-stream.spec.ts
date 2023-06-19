@@ -22,6 +22,7 @@ describe('src/sources/source-stream.ts', () => {
 
 	class TestSourceStream implements SourceStream {
 		getStream(_url: string): Readable | Promise<Readable> {
+			console.log(_url);
 			const readable = new Readable({
 				encoding: 'utf-8',
 			});
@@ -29,10 +30,12 @@ describe('src/sources/source-stream.ts', () => {
 		}
 
 		getStreamInfo(_input: string): Promise<StreamInfo> {
+			console.log(_input);
 			return Promise.resolve(mockStreamInfo);
 		}
 
 		search(_input: string): ResultAudioSearch[] | Promise<ResultAudioSearch[]> {
+			console.log(_input);
 			return [mockResultAudio];
 		}
 	}

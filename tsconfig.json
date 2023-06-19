@@ -1,7 +1,6 @@
 {
-	"exclude": ["dist/", "node_modules", "test"],
+	"exclude": ["dist/", "node_modules", "test", "vitest.config.js"],
 	"include": ["./src/**/*.ts", "./**/*.json"],
-
 	"compilerOptions": {
 		"module": "commonjs",
 		"declaration": true,

@@ -1,14 +1,8 @@
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { fileLogger, logger } from '../../src/config/winston';
-import { readFileSync } from 'fs';
-import { cwd } from 'process';
-import { join } from 'path';
-import dayjs from 'dayjs';
 
 describe('src/config/winston.ts', () => {
 	vi.useFakeTimers();
-	const monthYear = '04-2023';
-	const dayMonthYear = '23-04-2023';
 
 	afterAll(() => {
 		vi.useRealTimers();
@@ -39,6 +33,5 @@ describe('src/config/winston.ts', () => {
 
 		expect(fileLogger.log).toHaveBeenCalledOnce();
 		expect(fileLogger.log).toBeCalledWith(level, message, error);
-	
 	});
 });

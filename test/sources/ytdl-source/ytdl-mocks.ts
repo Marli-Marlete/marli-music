@@ -5,15 +5,15 @@ import yts from 'yt-search';
 export const mockVideoUrl = 'https://www.youtube.com/watch?v=qGl7b1EPwfA';
 
 export const mockVideoResult: yts.VideoSearchResult = {
-	videoId: 'qGl7b1EPwfA',
-	title: 'video test 1',
-	seconds: 40,
-	url: 'www.youtube.com/watch?=023912',
 	duration: {
 		seconds: 40,
-		toString: () => '40',
 		timestamp: '',
+		toString: () => '40',
 	},
+	seconds: 40,
+	title: 'video test 1',
+	url: 'www.youtube.com/watch?=023912',
+	videoId: 'qGl7b1EPwfA',
 } as yts.VideoSearchResult;
 
 export const mockYtVideoInfo = {
@@ -44,12 +44,12 @@ export function setupYtdlStub() {
 			default: (url: string) => {
 				return url === mockVideoUrl ? new Readable() : null;
 			},
+			getInfo: () => mockYtVideoInfo,
+			getURLVideoID: () => mockVideoUrl,
 			validateURL: (url: string) => { 
 				console.log("NO MOCK VALIDATE URL");
 				return url.includes('www.youtube.com/watch?v=')
 			},
-			getURLVideoID: () => mockVideoUrl,
-			getInfo: () => mockYtVideoInfo,
 		};
 
 		return ytdlMock;

@@ -1,44 +1,53 @@
 import { Client, ClientOptions, Message } from 'discord.js';
-
-import { CommandsHandler } from './commands-handler';
-import { BOT_MESSAGES } from './default-messages';
+import { AudioPlayer } from '@discordjs/voice';
+import { SourceStream } from './../sources/source-stream';
+import { BOT_MESSAGES } from './containts/default-messages';
 import { sentryCapture } from '../config/sentry';
 import { logger } from '../config/winston';
+import { ERRORS } from '../shared/errors';
+import { Queue } from '../queue/queue';
+import { Search, Play, Pause, Resume, Stop, Command, Skip } from './commands/';
 
-interface BotInfo {
+export interface BotInfo {
 	prefix: string;
 	token: string;
 }
 
+export const ALL_COMMANDS: Record<string, any> = {
+	pause: Pause,
+	play: Play,
+	resume: Resume,
+	search: Search,
+	skip: Skip,
+	stop: Stop,
+};
+
 export class MarliMusic extends Client {
 	prefix: string;
+	players: Map<string, AudioPlayer> = new Map();
 
 	constructor(
 		private botInfo: BotInfo,
-		private handler: CommandsHandler,
+		public sourceStream: SourceStream,
+		public queue: Queue,
 		options?: ClientOptions,
 	) {
 		super(options);
 
 		this.prefix = botInfo.prefix;
 
-		this.login(this.botInfo.token);
+		this.login(this.botInfo.token).catch((reason) => {
+			logger.log('error', ERRORS.BOT_STARTUP_ERROR, reason);
+			sentryCapture(ERRORS.BOT_STARTUP_ERROR, new Error(reason));
+		});
 
 		this.once('ready', () => {
 			this.healthCheck();
-			setInterval(this.healthCheck.bind(this), 120_000);
 		});
 
 		this.on('error', (error: Error) => {
-			logger.log('error', 'Bot Error', error);
-			sentryCapture('bot.error', error);
-		});
-
-		this.once('reconnecting', () => {
-			logger.log('info', 'Bot Reconnecting!');
-		});
-		this.once('disconnect', () => {
-			logger.log('info', 'Bot Disconnect!');
+			logger.log('error', ERRORS.BOT_STARTUP_ERROR, error);
+			sentryCapture(ERRORS.BOT_STARTUP_ERROR, error);
 		});
 
 		this.on('messageCreate', async (message: Message) => {
@@ -47,52 +56,42 @@ export class MarliMusic extends Client {
 	}
 
 	public healthCheck() {
-		return `${this.user.username} online ${this.uptime}`;
+		const healthString = `${this.user.username} online ${this.uptime}`;
+		logger.log('debug', healthString);
+		return healthString;
+	}
+
+	public addPlayer(connection: string) {
+		this.players.set(connection, new AudioPlayer());
+	}
+
+	public getPlayer(connection: string) {
+		if (!this.players.has(connection)) {
+			this.addPlayer(connection);
+		}
+
+		return this.players.get(connection);
+	}
+
+	public removePlayer(connection: string) {
+		this.players.delete(connection);
 	}
 
 	private async onMessage(message: Message, botPrefix: string) {
 		if (message.author.bot) return;
 		if (!message.content.startsWith(botPrefix)) return;
-		if (!this.validate(message)) return;
 
 		const args = message.content.split(' ');
 		const input = message.content.replace(args[0], '');
-		const command = args[0].replace(botPrefix, '');
+		const commandString = args[0].replace(botPrefix, '');
 
-		switch (command) {
-			case 'search':
-				this.handler.search(message, input);
-				break;
-			case 'play':
-				this.handler.play(message, input);
-				break;
-			case 'pause':
-				this.handler.pause(message);
-				break;
-			case 'resume':
-				this.handler.resume(message);
-				break;
-			case 'stop':
-				this.handler.stop(message);
-				break;
-			default:
-				message.reply(BOT_MESSAGES.INVALID_COMMAND);
-		}
-	}
-
-	private validate(message: Message) {
-		const voiceChannel = message.member.voice.channel;
-		if (!voiceChannel) {
-			message.channel.send(BOT_MESSAGES.NOT_IN_A_VOICE_CHANNEL);
-			return false;
+		if (!ALL_COMMANDS[commandString]) {
+			message.reply(BOT_MESSAGES.INVALID_COMMAND);
+			return;
 		}
 
-		const permissions = voiceChannel.permissionsFor(message.client.user);
+		const command: Command = new ALL_COMMANDS[commandString](this);
 
-		if (!permissions.has('Connect') || !permissions.has('Speak')) {
-			message.channel.send(BOT_MESSAGES.NO_PERMISSION_JOIN_SPEAK);
-			return false;
-		}
-		return true;
+		command.execute(message, input);
 	}
 }
