@@ -1,4 +1,4 @@
-import { Readable } from 'node:stream';
+import { Readable } from 'node:stream'
 
 export interface ResultAudioSearch {
 	title: string;

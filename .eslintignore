@@ -1,0 +1,9 @@
+.eslintrc.js
+.expo-shared
+.vscode
+android
+ios
+build
+node_modules
+scripts
+dist

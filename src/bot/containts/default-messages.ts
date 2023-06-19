@@ -1,6 +1,8 @@
-import { Message } from 'discord.js';
-import * as dotenv from 'dotenv';
-import { sentryCapture } from '../../config/sentry';
+import { Message } from 'discord.js'
+import * as dotenv from 'dotenv'
+
+import { sentryCapture } from '../../config/sentry'
+
 dotenv.config();
 
 const INVALID_COMMAND = process.env.INVALID_COMMAND || 'INVALID COMMAND';
@@ -21,22 +23,22 @@ const MUSIC_SKIPPED = process.env.MUSIC_SKIPPED || 'SKIPPED THE MUSIC';
 const PLAYLIST_ENDED = process.env.PLAYLIST_ENDED || 'PLAYLIST ENDED';
 
 export const BOT_MESSAGES = {
-	CURRENT_PLAYING,
-	INVALID_COMMAND,
-	INVALID_INPUT_MESSAGE,
-	MUSIC_PAUSED,
-	MUSIC_RESUMED,
-	MUSIC_SKIPPED,
-	MUSIC_STOPPED,
-	NOT_IN_A_VOICE_CHANNEL,
-	NO_PERMISSION_JOIN_SPEAK,
-	PLAYLIST_ENDED,
-	PUSHED_TO_QUEUE,
+  CURRENT_PLAYING,
+  INVALID_COMMAND,
+  INVALID_INPUT_MESSAGE,
+  MUSIC_PAUSED,
+  MUSIC_RESUMED,
+  MUSIC_SKIPPED,
+  MUSIC_STOPPED,
+  NOT_IN_A_VOICE_CHANNEL,
+  NO_PERMISSION_JOIN_SPEAK,
+  PLAYLIST_ENDED,
+  PUSHED_TO_QUEUE,
 };
 
 export function sendCommandError(errorMessage: string, message: Message) {
-	message.reply({
-		content: errorMessage,
-	});
-	sentryCapture('command.error', new Error(errorMessage));
+  message.reply({
+    content: errorMessage,
+  });
+  sentryCapture('command.error', new Error(errorMessage));
 }
