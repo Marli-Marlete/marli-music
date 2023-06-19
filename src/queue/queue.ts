@@ -1,5 +1,6 @@
-import { AudioResource } from '@discordjs/voice';
-import { StreamInfo } from 'sources/source-stream';
+import { StreamInfo } from 'sources/source-stream'
+
+import { AudioResource } from '@discordjs/voice'
 
 export interface QueueData {
 	streamInfo: StreamInfo;
@@ -7,7 +8,7 @@ export interface QueueData {
 }
 
 export abstract class Queue {
-	items: Map<string, QueueData[]> = new Map();
+  items: Map<string, QueueData[]> = new Map();
 
 	abstract getList(connection: string): QueueData[];
 
@@ -19,34 +20,34 @@ export abstract class Queue {
 }
 
 export class LocalQueue extends Queue {
-	constructor() {
-		super();
-	}
+  constructor() {
+    super();
+  }
 
-	getList(connectionID: string): QueueData[] {
-		return this.items.get(connectionID);
-	}
+  getList(connectionID: string): QueueData[] {
+    return this.items.get(connectionID);
+  }
 
-	add(connectionID: string, value: QueueData) {
-		const connectionItems = this.getList(connectionID);
+  add(connectionID: string, value: QueueData) {
+    const connectionItems = this.getList(connectionID);
 
-		if (!connectionItems) {
-			this.items.set(connectionID, [value]);
-		} else {
-			connectionItems.push(value);
-		}
-	}
+    if (!connectionItems) {
+      this.items.set(connectionID, [value]);
+    } else {
+      connectionItems.push(value);
+    }
+  }
 
-	pop(connectionID: string) {
-		const connectionItems = this.getList(connectionID);
-		connectionItems.shift();
-		this.items.set(connectionID, connectionItems);
-	}
+  pop(connectionID: string) {
+    const connectionItems = this.getList(connectionID);
+    connectionItems.shift();
+    this.items.set(connectionID, connectionItems);
+  }
 
-	clear(connectionID: string): void {
-		const connectionItems = this.getList(connectionID);
-		if (connectionItems) {
-			this.items.set(connectionID, []);
-		}
-	}
+  clear(connectionID: string): void {
+    const connectionItems = this.getList(connectionID);
+    if (connectionItems) {
+      this.items.set(connectionID, []);
+    }
+  }
 }
