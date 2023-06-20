@@ -1,15 +1,17 @@
-import { Message } from 'discord.js'
-
+import { Message } from 'discord.js';
 import {
-    AudioPlayerStatus, createAudioResource, joinVoiceChannel, StreamType
-} from '@discordjs/voice'
+  AudioPlayerStatus,
+  createAudioResource,
+  joinVoiceChannel,
+  StreamType,
+} from '@discordjs/voice';
 
-import { ERRORS } from '../../shared/errors'
-import { StreamInfo } from '../../sources/source-stream'
-import { BOT_MESSAGES, sendCommandError } from '../containts/default-messages'
-import { BotHooks } from '../hooks/boot-hooks'
-import { MarliMusic } from '../marli-music'
-import { Command } from './command'
+import { ERRORS } from '../../shared/errors';
+import { StreamInfo } from '../../sources/source-stream';
+import { BOT_MESSAGES } from '../containts/default-messages';
+import { PlayHook } from './hooks/command-play-hook';
+import { MarliMusic } from '../marli-music';
+import { Command } from './command';
 
 export class Play extends Command {
   constructor(bot: MarliMusic) {
@@ -17,9 +19,8 @@ export class Play extends Command {
     this.name = 'play';
   }
   async execute(message: Message, input: string) {
-    this.validate(message, input);
-
     try {
+      await this.validate(message, input);
       const source = this.getSourceStream();
 
       const video = await source.getStreamFromUrl(input);
@@ -53,9 +54,10 @@ export class Play extends Command {
 
       if (player.state.status === AudioPlayerStatus.Idle) {
         player.play(audioResource);
-        const hooks = new BotHooks(message, connection, player, queue);
-        hooks.startHooks();
-        message.reply({
+        const playHook = new PlayHook(this.bot);
+        playHook.execute(message);
+
+        await message.reply({
           content: `${message.author.username} ${BOT_MESSAGES.CURRENT_PLAYING} ${streamInfo.title}`,
         });
       } else {
@@ -63,12 +65,12 @@ export class Play extends Command {
           audioResource,
           streamInfo,
         });
-        message.reply({
+        await message.reply({
           content: `${message.author.username} ${BOT_MESSAGES.PUSHED_TO_QUEUE} ${streamInfo.title}`,
         });
       }
     } catch (err) {
-      sendCommandError(err, err.message);
+      await this.sendCommandError(err, message);
     }
   }
 }

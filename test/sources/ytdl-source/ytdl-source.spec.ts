@@ -1,25 +1,19 @@
-import { Readable } from 'stream'
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
+import { Readable } from 'stream';
+import { afterAll, describe, expect, it, vi } from 'vitest';
 
-import { ERRORS } from '../../../src/shared/errors'
-import { YtdlSourceStream } from '../../../src/sources/ytdl-source/ytdl-source'
-import { mockVideoUrl, setupYtdlStub } from './ytdl-mocks'
+import { ERRORS } from '../../../src/shared/errors';
+import { mockVideoUrl, setupYtdlStub } from './ytdl-mocks';
+setupYtdlStub();
+import { YtdlSourceStream } from '../../../src/sources/ytdl-source/ytdl-source';
 
 describe('src/sources/ytdl-source/ytdl-source-stream.ts', () => {
-	
-  beforeAll(() => {
-    setupYtdlStub;
-  });
-
   afterAll(() => {
     vi.resetAllMocks();
     vi.clearAllMocks();
-    vi.restoreAllMocks;
+    vi.restoreAllMocks();
   });
 
-
   describe('getStream()', () => {
-    
     it('should run getStream correctly', async () => {
       const ytdlSource = new YtdlSourceStream();
       const stream = await ytdlSource.getStream(mockVideoUrl);
@@ -36,7 +30,6 @@ describe('src/sources/ytdl-source/ytdl-source-stream.ts', () => {
   });
 
   describe('getStreamFromUrl()', () => {
-
     it('should return youtube video results', async () => {
       const ytdlSource = new YtdlSourceStream();
       const results = await ytdlSource.search('test');
@@ -52,17 +45,13 @@ describe('src/sources/ytdl-source/ytdl-source-stream.ts', () => {
   });
 
   describe('search()', () => {
-
-        
     it('should run getStreamFromUrl() ', async () => {
-        
       const source = new YtdlSourceStream();
       const results = await source.getStreamFromUrl(mockVideoUrl);
       expect(results).toBeDefined();
     });
 
     it('should return undefined due to invalid url', async () => {
-			
       const source = new YtdlSourceStream();
       await source
         .getStreamFromUrl('www.invalid-yt-url')

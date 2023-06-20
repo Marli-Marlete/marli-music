@@ -1,52 +1,67 @@
-import { Message } from 'discord.js'
-
-import { AudioPlayer, getVoiceConnection } from '@discordjs/voice'
-
-import { BOT_MESSAGES } from '../containts/default-messages'
-import { MarliMusic } from '../marli-music'
+import { Message } from 'discord.js';
+import { AudioPlayer, getVoiceConnection } from '@discordjs/voice';
+import { BOT_MESSAGES, BotError } from '../containts/default-messages';
+import { MarliMusic } from '../marli-music';
+import { ERRORS } from '../../shared/errors';
+import { logger } from '../../config/winston';
+import { sentryCapture } from '../../config/sentry';
 
 export abstract class Command {
-  name: string;
+	name: string;
 
-  constructor(private bot: MarliMusic) {}
+	constructor(protected bot: MarliMusic) {}
 
 	abstract execute(message: Message, input: string): Promise<void>;
 
 	getPlayer(connectionID: string): AudioPlayer {
-	  return this.bot.getPlayer(connectionID);
+		return this.bot.getPlayer(connectionID);
 	}
 
 	getQueue() {
-	  return this.bot.queue;
+		return this.bot.queue;
 	}
 
 	getSourceStream() {
-	  return this.bot.sourceStream;
+		return this.bot.sourceStream;
 	}
 
 	public getConnection(message: Message) {
-	  return getVoiceConnection(message.member.voice.guild.id);
+		return getVoiceConnection(message.member.voice.guild.id);
 	}
 
-	validate(message: Message, input: string): boolean {
-	  const voiceChannel = message.member.voice.channel;
-	  if (!voiceChannel) {
-	    message.channel.send(BOT_MESSAGES.NOT_IN_A_VOICE_CHANNEL);
-	    return false;
-	  }
+	async validate(message: Message, input: string): Promise<boolean> {
+		const voiceChannel = message.member.voice.channel;
+		if (!voiceChannel) {
+			throw new BotError(
+				ERRORS.INVALID_COMMAND_USAGE,
+				BOT_MESSAGES.NOT_IN_A_VOICE_CHANNEL
+			);
+		}
 
-	  const permissions = voiceChannel.permissionsFor(message.client.user);
+		const permissions = voiceChannel.permissionsFor(message.client.user);
 
-	  if (!permissions.has('Connect') || !permissions.has('Speak')) {
-	    message.channel.send(BOT_MESSAGES.NO_PERMISSION_JOIN_SPEAK);
-	    return false;
-	  }
+		if (!permissions.has('Connect') || !permissions.has('Speak')) {
+			throw new BotError(
+				ERRORS.INVALID_COMMAND_USAGE,
+				BOT_MESSAGES.NO_PERMISSION_JOIN_SPEAK
+			);
+		}
 
-	  if (!input.length) {
-	    message.reply({ content: BOT_MESSAGES.INVALID_INPUT_MESSAGE });
-	    return false;
-	  }
+		if (!input.length) {
+			throw new BotError(
+				ERRORS.INVALID_COMMAND_USAGE,
+				BOT_MESSAGES.INVALID_INPUT_MESSAGE
+			);
+		}
 
-	  return true;
+		return true;
+	}
+
+	async sendCommandError(error: BotError, message: Message) {
+		logger.debug('error', error.stack, error);
+		await message.reply({
+			content: error.userMessage || BOT_MESSAGES.BOT_ERROR,
+		});
+		sentryCapture(ERRORS.RESOURCE_ERROR, error);
 	}
 }
