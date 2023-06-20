@@ -1,7 +1,4 @@
-import { Message } from 'discord.js'
-import * as dotenv from 'dotenv'
-
-import { sentryCapture } from '../../config/sentry'
+import * as dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -21,24 +18,29 @@ const PUSHED_TO_QUEUE =
 	process.env.PUSHED_TO_QUEUE || 'ADDED A SONG TO THE QUEUE';
 const MUSIC_SKIPPED = process.env.MUSIC_SKIPPED || 'SKIPPED THE MUSIC';
 const PLAYLIST_ENDED = process.env.PLAYLIST_ENDED || 'PLAYLIST ENDED';
+const PLAYLIST_ITEMS = process.env.PLAYLIST_ITEMS || 'PLAYLIST ITEMS';
+const PLAYLIST_EMPTY = process.env.PLAYLIST_EMPTY || 'PLAYLIST EMPTY';
+const BOT_ERROR = process.env.BOT_ERROR || 'FAILED TO EXECUTE COMMAND';
 
 export const BOT_MESSAGES = {
-  CURRENT_PLAYING,
-  INVALID_COMMAND,
-  INVALID_INPUT_MESSAGE,
-  MUSIC_PAUSED,
-  MUSIC_RESUMED,
-  MUSIC_SKIPPED,
-  MUSIC_STOPPED,
-  NOT_IN_A_VOICE_CHANNEL,
-  NO_PERMISSION_JOIN_SPEAK,
-  PLAYLIST_ENDED,
-  PUSHED_TO_QUEUE,
+	CURRENT_PLAYING,
+	INVALID_COMMAND,
+	INVALID_INPUT_MESSAGE,
+	MUSIC_PAUSED,
+	MUSIC_RESUMED,
+	MUSIC_SKIPPED,
+	MUSIC_STOPPED,
+	NOT_IN_A_VOICE_CHANNEL,
+	NO_PERMISSION_JOIN_SPEAK,
+	PLAYLIST_ENDED,
+	PUSHED_TO_QUEUE,
+	PLAYLIST_ITEMS,
+	PLAYLIST_EMPTY,
+	BOT_ERROR,
 };
 
-export function sendCommandError(errorMessage: string, message: Message) {
-  message.reply({
-    content: errorMessage,
-  });
-  sentryCapture('command.error', new Error(errorMessage));
+export class BotError extends Error {
+	public constructor(public message: string, public userMessage: string) {
+		super(message);
+	}
 }
