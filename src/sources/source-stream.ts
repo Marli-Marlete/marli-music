@@ -1,4 +1,4 @@
-import { Readable } from 'node:stream'
+import { Readable } from 'node:stream';
 
 export interface ResultAudioSearch {
 	title: string;
@@ -20,7 +20,7 @@ export interface SourceStream {
 	getStream(url: string): Readable | Promise<Readable>;
 	search(
 		input: string,
-		options?: SerachOptionsParams,
+		options?: SerachOptionsParams
 	): ResultAudioSearch[] | Promise<ResultAudioSearch[]>;
 	getStreamFromUrl(url: string): Promise<StreamInfo>;
 	validate(input: string): Promise<boolean>;
