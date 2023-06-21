@@ -12,7 +12,15 @@ export class Search extends Command {
       await this.validate(message, input);
       const source = this.getSourceStream();
       const searchResult = await source.search(message.content);
-      await message.reply(JSON.stringify(searchResult));
+      const limited = searchResult.slice(0, 10);
+      await message.reply(
+        limited
+          .map(
+            (item, index) =>
+              `\n${index + 1} - ${item.title} - ${item.duration} - ${item.url}`
+          )
+          .join(' ')
+      );
     } catch (err) {
       await this.sendCommandError(err, message);
     }
