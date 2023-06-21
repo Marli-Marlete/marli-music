@@ -8,3 +8,18 @@ export enum ERRORS {
   INVALID_COMMAND = 'INVALID COMMAND ERROR',
   INVALID_COMMAND_USAGE = 'INVALID COMMAND USAGE ERROR',
 }
+
+export enum STATUS_CODES {
+  OK = 200,
+  BAD_REQUEST = 400,
+  UNAUTHORIZED = 401,
+  FORBIDDEN = 403,
+  NOT_FOUND = 404,
+  INTERNAL_SERVER_ERROR = 500,
+}
+
+export class BotError extends Error {
+  public constructor(public message: string, public userMessage: string) {
+    super(message);
+  }
+}

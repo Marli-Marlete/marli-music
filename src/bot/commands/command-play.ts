@@ -6,7 +6,6 @@ import {
   StreamType,
 } from '@discordjs/voice';
 
-import { ERRORS } from '../../shared/errors';
 import { StreamInfo } from '../../sources/source-stream';
 import { BOT_MESSAGES } from '../containts/default-messages';
 import { PlayHook } from './hooks/command-play-hook';
@@ -36,8 +35,6 @@ export class Play extends Command {
       const audioResource = createAudioResource(stream, {
         inputType: StreamType.Opus,
       });
-
-      if (!audioResource.readable) throw new Error(ERRORS.RESOURCE_ERROR);
 
       const voiceMember = message.member.voice;
 

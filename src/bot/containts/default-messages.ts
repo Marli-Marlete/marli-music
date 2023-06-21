@@ -38,9 +38,3 @@ export const BOT_MESSAGES = {
   PLAYLIST_EMPTY,
   BOT_ERROR,
 };
-
-export class BotError extends Error {
-  public constructor(public message: string, public userMessage: string) {
-    super(message);
-  }
-}

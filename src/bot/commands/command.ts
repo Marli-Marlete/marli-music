@@ -1,8 +1,8 @@
 import { Message } from 'discord.js';
 import { AudioPlayer, getVoiceConnection } from '@discordjs/voice';
-import { BOT_MESSAGES, BotError } from '../containts/default-messages';
+import { BOT_MESSAGES } from '../containts/default-messages';
 import { MarliMusic } from '../marli-music';
-import { ERRORS } from '../../shared/errors';
+import { BotError, ERRORS } from '../../shared/errors';
 import { logger } from '../../config/winston';
 import { sentryCapture } from '../../config/sentry';
 

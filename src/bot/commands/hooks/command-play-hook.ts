@@ -3,9 +3,10 @@ import { Message } from 'discord.js';
 import { AudioPlayerStatus, VoiceConnectionStatus } from '@discordjs/voice';
 
 import { logger } from '../../../config/winston';
-import { BOT_MESSAGES, BotError } from '../../containts/default-messages';
+import { BOT_MESSAGES } from '../../containts/default-messages';
 import { Command } from '../command';
 import { MarliMusic } from '../../marli-music';
+import { BotError } from '../../../shared/errors';
 
 export class PlayHook extends Command {
   constructor(bot: MarliMusic) {
@@ -21,7 +22,7 @@ export class PlayHook extends Command {
       this.sendCommandError(
         new BotError(error.stack, BOT_MESSAGES.BOT_ERROR),
         message
-      ).catch((e) => logger.log('error', e));
+      );
     });
 
     player.on(AudioPlayerStatus.Idle, () => {
