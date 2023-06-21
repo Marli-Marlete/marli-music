@@ -9,12 +9,12 @@ import { Stop } from './command-stop';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const ALL_COMMANDS: Record<string, any> = {
-	search: Search,
-	play: Play,
-	pause: Pause,
-	resume: Resume,
-	skip: Skip,
-	stop: Stop,
-	queue: ListQueue,
-	help: CommandHelp,
+  search: Search,
+  play: Play,
+  pause: Pause,
+  resume: Resume,
+  skip: Skip,
+  stop: Stop,
+  queue: ListQueue,
+  help: CommandHelp,
 };

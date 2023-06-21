@@ -11,80 +11,80 @@ import { BOT_MESSAGES } from './containts/default-messages';
 import { ALL_COMMANDS, Command } from './commands';
 
 export interface BotInfo {
-	prefix: string;
-	token: string;
+  prefix: string;
+  token: string;
 }
 
 export class MarliMusic extends Client {
-	prefix: string;
-	players: Map<string, AudioPlayer> = new Map();
+  prefix: string;
+  players: Map<string, AudioPlayer> = new Map();
 
-	constructor(
-		private botInfo: BotInfo,
-		public sourceStream: SourceStream,
-		public queue: Queue,
-		options?: ClientOptions
-	) {
-		super(options);
+  constructor(
+    private botInfo: BotInfo,
+    public sourceStream: SourceStream,
+    public queue: Queue,
+    options?: ClientOptions
+  ) {
+    super(options);
 
-		this.prefix = botInfo.prefix;
+    this.prefix = botInfo.prefix;
 
-		this.login(this.botInfo.token).catch((reason) => {
-			logger.log('error', ERRORS.BOT_STARTUP_ERROR, reason);
-			sentryCapture(ERRORS.BOT_STARTUP_ERROR, new Error(reason));
-		});
+    this.login(this.botInfo.token).catch((reason) => {
+      logger.log('error', ERRORS.BOT_STARTUP_ERROR, reason);
+      sentryCapture(ERRORS.BOT_STARTUP_ERROR, new Error(reason));
+    });
 
-		this.once('ready', () => {
-			this.healthCheck();
-		});
+    this.once('ready', () => {
+      this.healthCheck();
+    });
 
-		this.on('error', (error: Error) => {
-			logger.error(ERRORS.BOT_STARTUP_ERROR, error);
-			sentryCapture(ERRORS.BOT_STARTUP_ERROR, error);
-		});
+    this.on('error', (error: Error) => {
+      logger.error(ERRORS.BOT_STARTUP_ERROR, error);
+      sentryCapture(ERRORS.BOT_STARTUP_ERROR, error);
+    });
 
-		this.on('messageCreate', async (message: Message) =>
-			this.onMessage(message)
-		);
-	}
+    this.on('messageCreate', async (message: Message) =>
+      this.onMessage(message)
+    );
+  }
 
-	public healthCheck() {
-		const healthString = `${this.user.username} online ${this.uptime}`;
-		logger.log('debug', healthString);
-		return healthString;
-	}
+  public healthCheck() {
+    const healthString = `${this.user.username} online ${this.uptime}`;
+    logger.log('debug', healthString);
+    return healthString;
+  }
 
-	public addPlayer(connection: string) {
-		this.players.set(connection, new AudioPlayer());
-	}
+  public addPlayer(connection: string) {
+    this.players.set(connection, new AudioPlayer());
+  }
 
-	public getPlayer(connection: string) {
-		if (!this.players.has(connection)) {
-			this.addPlayer(connection);
-		}
+  public getPlayer(connection: string) {
+    if (!this.players.has(connection)) {
+      this.addPlayer(connection);
+    }
 
-		return this.players.get(connection);
-	}
+    return this.players.get(connection);
+  }
 
-	public removePlayer(connection: string) {
-		this.players.delete(connection);
-	}
+  public removePlayer(connection: string) {
+    this.players.delete(connection);
+  }
 
-	private async onMessage(message: Message) {
-		if (message.author.bot) return;
-		if (!message.content.startsWith(this.prefix)) return;
+  private async onMessage(message: Message) {
+    if (message.author.bot) return;
+    if (!message.content.startsWith(this.prefix)) return;
 
-		const args = message.content.split(' ');
-		const input = message.content.replace(args[0], '');
-		const commandString = args[0].replace(this.prefix, '');
+    const args = message.content.split(' ');
+    const input = message.content.replace(args[0], '');
+    const commandString = args[0].replace(this.prefix, '');
 
-		if (!ALL_COMMANDS[commandString]) {
-			message.reply(BOT_MESSAGES.INVALID_COMMAND);
-			return;
-		}
+    if (!ALL_COMMANDS[commandString]) {
+      message.reply(BOT_MESSAGES.INVALID_COMMAND);
+      return;
+    }
 
-		const command: Command = new ALL_COMMANDS[commandString](this);
+    const command: Command = new ALL_COMMANDS[commandString](this);
 
-		command.execute(message, input);
-	}
+    command.execute(message, input);
+  }
 }

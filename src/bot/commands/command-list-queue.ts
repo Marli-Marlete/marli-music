@@ -9,14 +9,13 @@ export class ListQueue extends Command {
       const connectionID = message.member.voice.channelId;
       const queue = this.getQueue();
       const queueList = queue.getList(connectionID);
-      let content: string;
-      content = !queueList?.length
+      const content = !queueList?.length
         ? BOT_MESSAGES.PLAYLIST_EMPTY
         : queueList
             .map((item, index) => `\n${index + 1} - ${item.streamInfo.title}`)
             .join(' ');
 
-      await message.reply({ content });
+      await message.reply(content);
     } catch (error) {
       await this.sendCommandError(error, message);
     }
