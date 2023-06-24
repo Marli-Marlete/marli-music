@@ -2,6 +2,7 @@ import { Message } from 'discord.js';
 import { BOT_MESSAGES } from '../containts/default-messages';
 import { MarliMusic } from '../marli-music';
 import { Command } from './command';
+import { Stop } from './command-stop';
 
 export class Skip extends Command {
   constructor(bot: MarliMusic) {
@@ -15,20 +16,17 @@ export class Skip extends Command {
       const player = this.getPlayer(connectionID);
       const queue = this.getQueue();
       const playlist = queue.getList(connectionID);
-
       if (playlist.length) {
         const next = playlist[0];
-        await message.reply({
-          content: `${message.author.username} ${BOT_MESSAGES.MUSIC_SKIPPED} ${next.streamInfo.title}`,
-        });
+        await message.reply(
+          `${BOT_MESSAGES.MUSIC_SKIPPED} ${next.streamInfo.title}`
+        );
         player.play(next.audioResource);
         queue.pop(connectionID);
       } else {
-        await message.reply({
-          content: `${message.author.username} ${BOT_MESSAGES.MUSIC_STOPPED}`,
-        });
-        queue.clear(connectionID);
-        player.stop();
+        player.removeAllListeners();
+        const stop = new Stop(this.bot);
+        await stop.execute(message);
       }
     } catch (error) {
       await this.sendCommandError(error, message);

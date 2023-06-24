@@ -46,14 +46,12 @@ export class Play extends Command {
 
       const player = this.getPlayer(voiceMember.channelId);
       connection.subscribe(player);
-
       const queue = this.getQueue();
 
       if (player.state.status === AudioPlayerStatus.Idle) {
         player.play(audioResource);
         const playHook = new PlayHook(this.bot);
         playHook.execute(message);
-
         await message.reply({
           content: `${message.author.username} ${BOT_MESSAGES.CURRENT_PLAYING} ${streamInfo.title}`,
         });

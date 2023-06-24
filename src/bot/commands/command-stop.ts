@@ -16,9 +16,10 @@ export class Stop extends Command {
       const queue = this.getQueue();
       player.stop();
       queue.clear(connectionID);
-      await message.reply({
-        content: `${message.author.username} ${BOT_MESSAGES.MUSIC_STOPPED}`,
-      });
+      this.removePlayer(connectionID);
+      this.getConnection(message).destroy();
+
+      await message.reply(BOT_MESSAGES.PLAYLIST_ENDED);
     } catch (err) {
       await this.sendCommandError(err, message);
     }

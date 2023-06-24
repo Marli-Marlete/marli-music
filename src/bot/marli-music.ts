@@ -9,6 +9,7 @@ import { ERRORS } from '../shared/errors';
 import { SourceStream } from '../sources/source-stream';
 import { BOT_MESSAGES } from './containts/default-messages';
 import { ALL_COMMANDS, Command } from './commands';
+import { CommandHelp } from './commands/command-help';
 
 export interface BotInfo {
   prefix: string;
@@ -62,7 +63,6 @@ export class MarliMusic extends Client {
     if (!this.players.has(connection)) {
       this.addPlayer(connection);
     }
-
     return this.players.get(connection);
   }
 
@@ -79,12 +79,13 @@ export class MarliMusic extends Client {
     const commandString = args[0].replace(this.prefix, '');
 
     if (!ALL_COMMANDS[commandString]) {
-      message.reply(BOT_MESSAGES.INVALID_COMMAND);
+      await message.reply(BOT_MESSAGES.INVALID_COMMAND);
+      await new CommandHelp(this).execute(message);
       return;
     }
 
     const command: Command = new ALL_COMMANDS[commandString](this);
 
-    command.execute(message, input);
+    await command.execute(message, input);
   }
 }
