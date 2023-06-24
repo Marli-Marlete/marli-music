@@ -1,9 +1,9 @@
-import { Readable } from 'node:stream'
-import yts from 'yt-search'
-import ytdl, { getInfo, getURLVideoID, validateURL } from 'ytdl-core'
+import { Readable } from 'node:stream';
+import yts from 'yt-search';
+import ytdl, { getInfo, getURLVideoID, validateURL } from 'ytdl-core';
 
-import { ERRORS } from '../../shared/errors'
-import { ResultAudioSearch, SourceStream } from '../source-stream'
+import { ERRORS } from '../../shared/errors';
+import { ResultAudioSearch, SourceStream } from '../source-stream';
 
 export class YtdlSourceStream implements SourceStream {
   async getStream(url: string): Promise<Readable> {
@@ -46,6 +46,6 @@ export class YtdlSourceStream implements SourceStream {
 
   async validate(url: string): Promise<boolean> {
     // implementation pending
-    return (Boolean(url));
+    return Boolean(url);
   }
 }

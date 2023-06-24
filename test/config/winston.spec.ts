@@ -1,6 +1,6 @@
-import { afterAll, describe, expect, it, vi } from 'vitest'
+import { afterAll, describe, expect, it, vi } from 'vitest';
 
-import { fileLogger, logger } from '../../src/config/winston'
+import { fileLogger, logger } from '../../src/config/winston';
 
 describe('src/config/winston.ts', () => {
   vi.useFakeTimers();

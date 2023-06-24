@@ -1,7 +1,11 @@
-import { Readable } from 'stream'
-import { afterAll, describe, expect, it, vi } from 'vitest'
+import { Readable } from 'stream';
+import { afterAll, describe, expect, it, vi } from 'vitest';
 
-import { ResultAudioSearch, SourceStream, StreamInfo } from '../../src/sources/source-stream'
+import {
+  ResultAudioSearch,
+  SourceStream,
+  StreamInfo,
+} from '../../src/sources/source-stream';
 
 describe('src/sources/source-stream.ts', () => {
   const mockURLStream = 'https://some.stream.io?stream=03310';
@@ -37,14 +41,14 @@ describe('src/sources/source-stream.ts', () => {
     }
 
     getStreamFromUrl(_url: string): Promise<StreamInfo> {
-      console.log(_url)
+      console.log(_url);
       return Promise.resolve(mockStreamInfo);
     }
 
     validate(_input: string): Promise<boolean> {
-      console.log(_input)
+      console.log(_input);
 
-      return Promise.resolve(true)
+      return Promise.resolve(true);
     }
   }
 

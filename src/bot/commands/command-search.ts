@@ -1,8 +1,6 @@
-import { Message } from 'discord.js'
-
-import { sendCommandError } from '../containts/default-messages'
-import { MarliMusic } from '../marli-music'
-import { Command } from './command'
+import { Message } from 'discord.js';
+import { MarliMusic } from '../marli-music';
+import { Command } from './command';
 
 export class Search extends Command {
   name = 'search';
@@ -10,13 +8,21 @@ export class Search extends Command {
     super(bot);
   }
   async execute(message: Message, input: string) {
-    this.validate(message, input);
     try {
+      await this.validate(message, input);
       const source = this.getSourceStream();
       const searchResult = await source.search(message.content);
-      message.reply(JSON.stringify(searchResult));
+      const limited = searchResult.slice(0, 10);
+      await message.reply(
+        limited
+          .map(
+            (item, index) =>
+              `\n${index + 1} - ${item.title} - ${item.duration} - ${item.url}`
+          )
+          .join(' ')
+      );
     } catch (err) {
-      sendCommandError(err, message);
+      await this.sendCommandError(err, message);
     }
   }
 }

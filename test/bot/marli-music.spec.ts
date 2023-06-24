@@ -1,8 +1,8 @@
-import { afterAll, describe, expect, it, vi } from 'vitest'
+import { afterAll, describe, expect, it, vi } from 'vitest';
 
-import { MarliMusic } from '../../src/bot/marli-music'
-import { LocalQueue } from '../../src/queue/queue'
-import { YtdlSourceStream } from '../../src/sources/ytdl-source/ytdl-source'
+import { MarliMusic } from '../../src/bot/marli-music';
+import { LocalQueue } from '../../src/queue/queue';
+import { YtdlSourceStream } from '../../src/sources/ytdl-source/ytdl-source';
 
 describe('src/bot/marli-music.ts', () => {
   afterAll(() => {
@@ -12,7 +12,7 @@ describe('src/bot/marli-music.ts', () => {
   describe('healthCheck', () => {
     it('should return healthCheck', () => {
       vi.spyOn(MarliMusic.prototype, 'login').mockImplementation(() =>
-        Promise.resolve(''),
+        Promise.resolve('')
       );
       const marli = new MarliMusic(
         {
@@ -21,7 +21,7 @@ describe('src/bot/marli-music.ts', () => {
         },
         new YtdlSourceStream(),
         new LocalQueue(),
-        { intents: [] },
+        { intents: [] }
       );
 
       const healthCheckSpy = vi.spyOn(marli, 'healthCheck');

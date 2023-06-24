@@ -1,6 +1,6 @@
-import { Readable } from 'stream'
-import { vi } from 'vitest'
-import yts from 'yt-search'
+import { Readable } from 'stream';
+import { vi } from 'vitest';
+import yts from 'yt-search';
 
 export const mockVideoUrl = 'https://www.youtube.com/watch?v=qGl7b1EPwfA';
 
@@ -32,11 +32,10 @@ export const mockSearchResult: Partial<yts.SearchResult> = {
   videos: [mockVideoResult],
 };
 
-
 export function setupYtdlStub() {
   vi.mock('ytdl-core', async () => {
     const original = await vi.importActual<typeof import('ytdl-core')>(
-      'ytdl-core',
+      'ytdl-core'
     );
     const ytdlMock = {
       ...original,
@@ -45,8 +44,8 @@ export function setupYtdlStub() {
       },
       getInfo: () => mockYtVideoInfo,
       getURLVideoID: () => mockVideoUrl,
-      validateURL: (url: string) => { 
-        console.log("NO MOCK VALIDATE URL");
+      validateURL: (url: string) => {
+        console.log('NO MOCK VALIDATE URL');
         return url.includes('www.youtube.com/watch?v=');
       },
     };

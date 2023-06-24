@@ -1,8 +1,8 @@
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { botStartup } from '../src/bot'
-import { initConfigs } from '../src/config'
-import { startServer } from '../src/http'
+import { botStartup } from '../src/bot';
+import { initConfigs } from '../src/config';
+import { startServer } from '../src/http';
 
 describe('src/index.ts', () => {
   beforeAll(() => {

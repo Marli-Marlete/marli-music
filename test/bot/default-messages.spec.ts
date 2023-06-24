@@ -1,6 +1,6 @@
-import { afterAll, describe, expect, it, vi } from 'vitest'
+import { afterAll, describe, expect, it, vi } from 'vitest';
 
-import { BOT_MESSAGES } from '../../src/bot/containts/default-messages'
+import { BOT_MESSAGES } from '../../src/bot/containts/default-messages';
 
 describe('src/bot/default-messages.ts', () => {
   afterAll(() => {

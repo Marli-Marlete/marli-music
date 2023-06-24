@@ -1,8 +1,8 @@
-import * as dotenv from 'dotenv'
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
+import * as dotenv from 'dotenv';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { initConfigs } from '../../src/config/index'
-import { initSentry } from '../../src/config/sentry'
+import { initConfigs } from '../../src/config/index';
+import { initSentry } from '../../src/config/sentry';
 
 describe('src/config/index.ts', () => {
   beforeAll(() => {

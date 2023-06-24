@@ -1,8 +1,8 @@
-import { afterAll, describe, expect, it, vi } from 'vitest'
+import { afterAll, describe, expect, it, vi } from 'vitest';
 
-import Sentry, { Transaction } from '@sentry/node'
+import Sentry, { Transaction } from '@sentry/node';
 
-import { initSentry, sentryCapture } from '../../src/config/sentry'
+import { initSentry, sentryCapture } from '../../src/config/sentry';
 
 describe('src/config/sentry.ts', () => {
   afterAll(() => {

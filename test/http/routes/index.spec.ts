@@ -1,6 +1,6 @@
-import { afterAll, describe, expect, it, vi } from 'vitest'
+import { afterAll, describe, expect, it, vi } from 'vitest';
 
-import { mainRouter } from '../../../src/http/routes/index'
+import { mainRouter } from '../../../src/http/routes/index';
 
 describe('src/http/routes/index.ts', () => {
   afterAll(() => {

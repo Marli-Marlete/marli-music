@@ -1,8 +1,8 @@
-import express, { Application } from 'express'
-import { Server } from 'http'
+import express, { Application } from 'express';
+import { Server } from 'http';
 
-import { logger } from '../config/winston'
-import { mainRouter } from './routes'
+import { logger } from '../config/winston';
+import { mainRouter } from './routes';
 
 const appServer: Application = express();
 let httpServer: Server;

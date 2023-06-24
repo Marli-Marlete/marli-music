@@ -1,8 +1,8 @@
-import * as dotenv from 'dotenv'
+import * as dotenv from 'dotenv';
 
-import { LocalQueue } from '../queue/queue'
-import { PlayDlSourceStream } from '../sources/play-dl-source/play-dl-source'
-import { MarliMusic } from './marli-music'
+import { LocalQueue } from '../queue/queue';
+import { PlayDlSourceStream } from '../sources/play-dl-source/play-dl-source';
+import { MarliMusic } from './marli-music';
 
 dotenv.config();
 

@@ -1,8 +1,16 @@
-import supertest from 'supertest'
-import { afterAll, afterEach, describe, expect, it, SpyInstance, vi } from 'vitest'
+import supertest from 'supertest';
+import {
+  afterAll,
+  afterEach,
+  describe,
+  expect,
+  it,
+  SpyInstance,
+  vi,
+} from 'vitest';
 
-import { logger } from '../../src/config/winston'
-import { appServer, httpServer, startServer } from '../../src/http/index'
+import { logger } from '../../src/config/winston';
+import { appServer, httpServer, startServer } from '../../src/http/index';
 
 describe('src/http/index.ts', () => {
   afterEach(() => {

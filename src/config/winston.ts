@@ -1,7 +1,7 @@
-import dayjs from 'dayjs'
-import { join } from 'path'
-import { cwd } from 'process'
-import winston, { format, transports } from 'winston'
+import dayjs from 'dayjs';
+import { join } from 'path';
+import { cwd } from 'process';
+import winston, { format, transports } from 'winston';
 
 class Logger {
   private logger: winston.Logger;
@@ -13,6 +13,14 @@ class Logger {
     return this.logger.log(level, message, error);
   }
 
+  public debug(level: string, ...args: unknown[]) {
+    return args.map((arg) => this.logger.log(level, arg));
+  }
+
+  public error(message: string, error?: Error) {
+    return this.logger.error(message, error);
+  }
+
   private makeLogger() {
     return winston.createLogger({
       format: format.combine(
@@ -20,17 +28,17 @@ class Logger {
         format.timestamp(),
         format.printf(({ timestamp, level, message }) => {
           return `[${timestamp}] ${level}: ${message}`;
-        }),
+        })
       ),
       level: 'debug',
       transports: this.options.saveToFile
         ? [
-          new winston.transports.Console(),
-          new transports.File({
-            dirname: this.makeFolderName(),
-            filename: this.makeFileName(),
-          }),
-				  ]
+            new winston.transports.Console(),
+            new transports.File({
+              dirname: this.makeFolderName(),
+              filename: this.makeFileName(),
+            }),
+          ]
         : [new winston.transports.Console()],
     });
   }

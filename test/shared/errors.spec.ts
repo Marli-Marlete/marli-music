@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest';
 
-import { ERRORS } from '../../src/shared/errors'
+import { ERRORS } from '../../src/shared/errors';
 
 describe('src/shared/errors.ts', () => {
   it('should contain correct errors', () => {
