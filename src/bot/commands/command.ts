@@ -17,6 +17,10 @@ export abstract class Command {
     return this.bot.getPlayer(connectionID);
   }
 
+  removePlayer(connectionID: string) {
+    this.bot.removePlayer(connectionID);
+  }
+
   getQueue() {
     return this.bot.queue;
   }

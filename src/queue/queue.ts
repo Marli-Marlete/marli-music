@@ -30,12 +30,8 @@ export class LocalQueue extends Queue {
 
   add(connectionID: string, value: QueueData) {
     const connectionItems = this.getList(connectionID);
-
-    if (!connectionItems) {
-      this.items.set(connectionID, [value]);
-    } else {
-      connectionItems.push(value);
-    }
+    connectionItems.push(value);
+    this.items.set(connectionID, connectionItems);
   }
 
   pop(connectionID: string) {
@@ -45,9 +41,6 @@ export class LocalQueue extends Queue {
   }
 
   clear(connectionID: string): void {
-    const connectionItems = this.getList(connectionID);
-    if (connectionItems) {
-      this.items.set(connectionID, []);
-    }
+    this.items.delete(connectionID);
   }
 }

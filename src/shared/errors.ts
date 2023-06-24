@@ -19,6 +19,7 @@ export enum STATUS_CODES {
 }
 
 export class BotError extends Error {
+  public code: STATUS_CODES;
   public constructor(public message: string, public userMessage: string) {
     super(message);
   }

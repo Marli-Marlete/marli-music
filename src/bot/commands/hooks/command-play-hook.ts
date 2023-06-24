@@ -7,6 +7,7 @@ import { BOT_MESSAGES } from '../../containts/default-messages';
 import { Command } from '../command';
 import { MarliMusic } from '../../marli-music';
 import { BotError } from '../../../shared/errors';
+import { Skip } from '../command-skip';
 
 export class PlayHook extends Command {
   constructor(bot: MarliMusic) {
@@ -18,48 +19,20 @@ export class PlayHook extends Command {
     const player = this.getPlayer(connectionID);
     const connection = this.getConnection(message);
 
-    player.on('error', (error: Error) => {
-      this.sendCommandError(
+    player.on('error', async (error: Error) => {
+      await this.sendCommandError(
         new BotError(error.stack, BOT_MESSAGES.BOT_ERROR),
         message
       );
     });
 
-    player.on(AudioPlayerStatus.Idle, () => {
-      const queue = this.getQueue();
-      const items = queue.getList(connectionID);
-
-      if (!items.length) {
-        message
-          .reply({
-            content: `${BOT_MESSAGES.PLAYLIST_ENDED}`,
-          })
-          .catch((error) =>
-            this.sendCommandError(
-              new BotError(error.stack, BOT_MESSAGES.BOT_ERROR),
-              message
-            )
-          );
-        connection.destroy();
-      } else {
-        const next = items[0];
-        message
-          .reply({
-            content: `${message.author.username} ${BOT_MESSAGES.CURRENT_PLAYING} ${next.streamInfo.title}`,
-          })
-          .catch((error) => {
-            this.sendCommandError(
-              new BotError(error.stack, BOT_MESSAGES.BOT_ERROR),
-              message
-            );
-          });
-        player.play(next.audioResource);
-        queue.pop(connectionID);
-      }
+    player.on(AudioPlayerStatus.Idle, async () => {
+      const skip = new Skip(this.bot);
+      await skip.execute(message);
     });
 
-    connection.on('error', (error: Error) => {
-      this.sendCommandError(
+    connection.on('error', async (error: Error) => {
+      await this.sendCommandError(
         new BotError(error.stack, BOT_MESSAGES.BOT_ERROR),
         message
       );
@@ -68,6 +41,8 @@ export class PlayHook extends Command {
     connection.on(VoiceConnectionStatus.Disconnected, () => {
       logger.log('info', 'disconnect');
       connection.destroy();
+      const connectionID = message.member.voice.channelId;
+      this.removePlayer(connectionID);
     });
   }
 }

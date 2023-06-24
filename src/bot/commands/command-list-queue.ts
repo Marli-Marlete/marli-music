@@ -14,7 +14,6 @@ export class ListQueue extends Command {
         : queueList
             .map((item, index) => `\n${index + 1} - ${item.streamInfo.title}`)
             .join(' ');
-
       await message.reply(content);
     } catch (error) {
       await this.sendCommandError(error, message);
