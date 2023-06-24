@@ -1,5 +1,9 @@
 import { Readable } from 'node:stream';
-import play, { validate as validateStreamUrl, YouTubeVideo } from 'play-dl';
+import play, {
+  SpotifyTrack,
+  validate as validateStreamUrl,
+  YouTubeVideo,
+} from 'play-dl';
 
 import {
   ResultAudioSearch,
@@ -64,11 +68,14 @@ export class PlayDlSourceStream implements SourceStream {
           await play.refreshToken();
         }
 
-        const spotifyInfo = await play.spotify(url.trim());
+        const spotifyInfo = (await play.spotify(url.trim())) as SpotifyTrack;
 
-        const searched = await this.search(`${spotifyInfo.name} - ${spotifyInfo.artists[0].name}`, {
-          limit: 1,
-        });
+        const searched = await this.search(
+          `${spotifyInfo.name} - ${spotifyInfo.artists[0].name}`,
+          {
+            limit: 1,
+          }
+        );
 
         return {
           title: spotifyInfo.name,
