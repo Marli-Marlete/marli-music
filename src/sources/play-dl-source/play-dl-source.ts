@@ -61,13 +61,12 @@ export class PlayDlSourceStream implements SourceStream {
 
       if (this.streamType === 'sp_track') {
         if (play.is_expired()) {
-          console.log({ expired: play.is_expired() });
           await play.refreshToken();
         }
 
         const spotifyInfo = await play.spotify(url.trim());
 
-        const searched = await this.search(spotifyInfo.name, {
+        const searched = await this.search(`${spotifyInfo.name} - ${spotifyInfo.artists[0].name}`, {
           limit: 1,
         });
 
