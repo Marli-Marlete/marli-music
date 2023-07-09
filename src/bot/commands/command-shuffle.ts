@@ -9,7 +9,7 @@ export class Shuffle extends Command {
     this.name = 'shuffle';
   }
 
-  async execute(message: Message<boolean>, input: string): Promise<void> {
+  async execute(message: Message<boolean>, _input: string): Promise<void> {
     try {
 
       this.getQueue().shuffle(message.member.voice.channelId);
