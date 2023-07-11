@@ -1,14 +1,21 @@
-import * as COMMANDS from './index';
-
+import { CommandHelp } from './command-help';
+import { ListQueue } from './command-list-queue';
+import { Pause } from './command-pause';
+import { Play } from './command-play';
+import { Resume } from './command-resume';
+import { Search } from './command-search';
+import { Skip } from './command-skip';
+import { Stop } from './command-stop';
+import { Shuffle } from './command-shuffle';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const ALL_COMMANDS: Record<string, any> = {
-  search: COMMANDS.Search,
-  play: COMMANDS.Play,
-  pause: COMMANDS.Pause,
-  resume: COMMANDS.Resume,
-  skip: COMMANDS.Skip,
-  stop: COMMANDS.Stop,
-  queue: COMMANDS.ListQueue,
-  help: COMMANDS.CommandHelp,
-  shuffle: COMMANDS.Shuffle,
+  search: Search,
+  play: Play,
+  pause: Pause,
+  resume: Resume,
+  skip: Skip,
+  stop: Stop,
+  queue: ListQueue,
+  help: CommandHelp,
+  shuffle: Shuffle,
 };
