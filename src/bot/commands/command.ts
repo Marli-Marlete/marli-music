@@ -11,7 +11,7 @@ export abstract class Command {
 
   constructor(protected bot: MarliMusic) {}
 
-  abstract execute(message: Message, input: string): Promise<void>;
+  abstract execute(message: Message, input?: string): Promise<void>;
 
   getPlayer(connectionID: string): AudioPlayer {
     return this.bot.getPlayer(connectionID);
