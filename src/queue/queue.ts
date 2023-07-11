@@ -1,6 +1,6 @@
-import { StreamInfo } from 'sources/source-stream';
-
 import { AudioResource } from '@discordjs/voice';
+import { StreamInfo } from 'sources/source-stream';
+import { shuffleArray } from '../helpers/helpers';
 
 export interface QueueData {
   streamInfo: StreamInfo;
@@ -17,6 +17,8 @@ export abstract class Queue {
   abstract pop(connection: string): void;
 
   abstract clear(connection: string): void;
+
+  abstract shuffle(connection: string): void;
 }
 
 export class LocalQueue extends Queue {
@@ -42,5 +44,13 @@ export class LocalQueue extends Queue {
 
   clear(connectionID: string): void {
     this.items.delete(connectionID);
+  }
+
+  shuffle(connectionID: string): void {
+    const list = this.getList(connectionID);
+
+    const shuffledList = shuffleArray<QueueData>(list);
+
+    this.items.set(connectionID, shuffledList);
   }
 }

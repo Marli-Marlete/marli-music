@@ -7,3 +7,5 @@ export * from './command-stop';
 export * from './command-skip';
 export * from './command';
 export * from './command-list-queue';
+export * from './command-help';
+export * from './command-shuffle';
