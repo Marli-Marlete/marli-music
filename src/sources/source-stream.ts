@@ -8,8 +8,9 @@ export interface ResultAudioSearch {
 }
 
 export interface StreamInfo {
-  url: string;
   title: string;
+  url?: string;
+  artist?: string;
 }
 
 export interface SerachOptionsParams {
@@ -22,6 +23,6 @@ export interface SourceStream {
     input: string,
     options?: SerachOptionsParams
   ): ResultAudioSearch[] | Promise<ResultAudioSearch[]>;
-  getStreamFromUrl(url: string): Promise<StreamInfo>;
+  getStreamFromUrl(url: string): Promise<StreamInfo[]>;
   validate(input: string): Promise<boolean>;
 }
