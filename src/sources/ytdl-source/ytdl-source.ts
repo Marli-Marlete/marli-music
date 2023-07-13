@@ -36,10 +36,12 @@ export class YtdlSourceStream implements SourceStream {
 
       const info = await getInfo(videoId);
 
-      return {
-        title: info.player_response.videoDetails.title,
-        url: info.videoDetails.video_url,
-      };
+      return [
+        {
+          title: info.player_response.videoDetails.title,
+          url: info.videoDetails.video_url,
+        },
+      ];
     }
     return Promise.reject(ERRORS.RESULT_NOT_FOUND);
   }
