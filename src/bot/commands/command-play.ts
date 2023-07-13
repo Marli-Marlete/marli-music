@@ -22,18 +22,21 @@ export class Play extends Command {
     try {
       await this.validate(message, input);
       const source = this.getSourceStream();
+      const queue = this.getQueue();
 
       const videos = await source.getStreamFromUrl(input);
       let searchResult = videos ?? (await source.search(input));
 
-      const streamInfo: StreamInfo[] = searchResult.map((video) => ({
-        title: video?.title,
-        url: video?.url,
-      }));
+      if (videos[0].artist) {
+        searchResult = await source.search(
+          `${videos[0].title} - ${videos[0].artist}`,
+          {
+            limit: 1,
+          }
+        );
+      }
 
-      console.log({ streamInfo });
-
-      const stream = await source.getStream(streamInfo[0]?.url);
+      const stream = await source.getStream(searchResult[0]?.url);
 
       const audioResource = createAudioResource(stream, {
         inputType: StreamType.Opus,
@@ -47,35 +50,18 @@ export class Play extends Command {
         guildId: String(voiceMember.guild.id),
       });
 
+      if (videos[0].artist) {
+        videos.map(async (currentStream) => {
+          queue.add(voiceMember.channelId, {
+            audioResource,
+            streamInfo: currentStream,
+          });
+        });
+      }
+
       const player = this.getPlayer(voiceMember.channelId);
 
       connection.subscribe(player);
-
-      const queue = this.getQueue();
-
-      if (videos[0].artist) {
-        console.log('ARTIST: ', `${videos[0].title} - ${videos[0].artist}`);
-        searchResult = await source.search(
-          `${videos[0].title} - ${videos[0].artist}`,
-          {
-            limit: 1,
-          }
-        );
-
-        await Promise.all(
-          videos.map(async (currentStream) => {
-            console.log('QUEUE: ', currentStream.artist);
-            queue.add(voiceMember.channelId, {
-              audioResource,
-              streamInfo: currentStream,
-            });
-
-            await message.reply({
-              content: `${message.author.username} ${BOT_MESSAGES.PUSHED_TO_QUEUE} ${currentStream.title}`,
-            });
-          })
-        );
-      }
 
       if (player.state.status === AudioPlayerStatus.Idle) {
         player.play(audioResource);
@@ -85,16 +71,16 @@ export class Play extends Command {
         playHook.execute(message);
 
         await message.reply({
-          content: `${message.author.username} ${BOT_MESSAGES.CURRENT_PLAYING} ${streamInfo[0].title}`,
+          content: `${message.author.username} ${BOT_MESSAGES.CURRENT_PLAYING} ${searchResult[0].title}`,
         });
       } else {
         queue.add(voiceMember.channelId, {
           audioResource,
-          streamInfo: streamInfo[0],
+          streamInfo: searchResult[0],
         });
 
         await message.reply({
-          content: `${message.author.username} ${BOT_MESSAGES.PUSHED_TO_QUEUE} ${streamInfo[0].title}`,
+          content: `${message.author.username} ${BOT_MESSAGES.PUSHED_TO_QUEUE} ${searchResult[0].title}`,
         });
       }
     } catch (err) {
