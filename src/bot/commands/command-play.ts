@@ -1,4 +1,5 @@
 import { Message } from 'discord.js';
+
 import {
   AudioPlayerStatus,
   createAudioResource,
@@ -8,9 +9,9 @@ import {
 
 import { StreamInfo } from '../../sources/source-stream';
 import { BOT_MESSAGES } from '../containts/default-messages';
-import { PlayHook } from './hooks/command-play-hook';
 import { MarliMusic } from '../marli-music';
 import { Command } from './command';
+import { PlayHook } from './hooks/command-play-hook';
 
 export class Play extends Command {
   constructor(bot: MarliMusic) {
@@ -22,15 +23,17 @@ export class Play extends Command {
       await this.validate(message, input);
       const source = this.getSourceStream();
 
-      const video = await source.getStreamFromUrl(input);
-      const searchResult = video ?? (await source.search(input));
+      const videos = await source.getStreamFromUrl(input);
+      let searchResult = videos ?? (await source.search(input));
 
-      const streamInfo: StreamInfo = {
-        title: video?.title || searchResult[0].title,
-        url: video?.url || searchResult[0].url,
-      };
+      const streamInfo: StreamInfo[] = searchResult.map((video) => ({
+        title: video?.title,
+        url: video?.url,
+      }));
 
-      const stream = await source.getStream(video?.url ?? searchResult[0].url);
+      console.log({ streamInfo });
+
+      const stream = await source.getStream(streamInfo[0]?.url);
 
       const audioResource = createAudioResource(stream, {
         inputType: StreamType.Opus,
@@ -45,23 +48,53 @@ export class Play extends Command {
       });
 
       const player = this.getPlayer(voiceMember.channelId);
+
       connection.subscribe(player);
+
       const queue = this.getQueue();
+
+      if (videos[0].artist) {
+        console.log('ARTIST: ', `${videos[0].title} - ${videos[0].artist}`);
+        searchResult = await source.search(
+          `${videos[0].title} - ${videos[0].artist}`,
+          {
+            limit: 1,
+          }
+        );
+
+        await Promise.all(
+          videos.map(async (currentStream) => {
+            console.log('QUEUE: ', currentStream.artist);
+            queue.add(voiceMember.channelId, {
+              audioResource,
+              streamInfo: currentStream,
+            });
+
+            await message.reply({
+              content: `${message.author.username} ${BOT_MESSAGES.PUSHED_TO_QUEUE} ${currentStream.title}`,
+            });
+          })
+        );
+      }
 
       if (player.state.status === AudioPlayerStatus.Idle) {
         player.play(audioResource);
+
         const playHook = new PlayHook(this.bot);
+
         playHook.execute(message);
+
         await message.reply({
-          content: `${message.author.username} ${BOT_MESSAGES.CURRENT_PLAYING} ${streamInfo.title}`,
+          content: `${message.author.username} ${BOT_MESSAGES.CURRENT_PLAYING} ${streamInfo[0].title}`,
         });
       } else {
         queue.add(voiceMember.channelId, {
           audioResource,
-          streamInfo,
+          streamInfo: streamInfo[0],
         });
+
         await message.reply({
-          content: `${message.author.username} ${BOT_MESSAGES.PUSHED_TO_QUEUE} ${streamInfo.title}`,
+          content: `${message.author.username} ${BOT_MESSAGES.PUSHED_TO_QUEUE} ${streamInfo[0].title}`,
         });
       }
     } catch (err) {
