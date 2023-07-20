@@ -11,9 +11,8 @@ export class Shuffle extends Command {
 
   async execute(message: Message<boolean>): Promise<void> {
     try {
-
+      await this.validate(message, 'shuffle');
       this.getQueue().shuffle(message.member.voice.channelId);
-
       new ListQueue(this.bot).execute(message);
     } catch (error) {
       await this.sendCommandError(error, message);
