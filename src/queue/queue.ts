@@ -5,6 +5,7 @@ import { shuffleArray } from '../helpers/helpers';
 export interface QueueData {
   streamInfo: StreamInfo;
   audioResource: AudioResource;
+  userSearch: string;
 }
 
 export abstract class Queue {
