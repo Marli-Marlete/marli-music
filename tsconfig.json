@@ -1,36 +1,37 @@
 {
-	"exclude": ["dist/", "node_modules", "test", "vitest.config.js"],
-	"include": ["./src/**/*.ts", "./**/*.json"],
-	"compilerOptions": {
-		"module": "commonjs",
-		"declaration": true,
-		"removeComments": false,
-		"emitDecoratorMetadata": true,
-		"experimentalDecorators": true,
-		"resolveJsonModule": true,
-		"allowSyntheticDefaultImports": true,
-		"target": "ES2022",
-		"noEmit": false,
-		"composite": true,
-		"sourceMap": true,
-		"esModuleInterop": true,
-		"baseUrl": "./src",
-		"incremental": true,
-		"skipLibCheck": true,
-		"strictNullChecks": false,
-		"noImplicitAny": false,
-		"strictBindCallApply": false,
-		"forceConsistentCasingInFileNames": false,
-		"noFallthroughCasesInSwitch": false,
-		"outDir": "./dist",
-		"paths": {
-			"@src/*": ["src/*"],
-			"@test/*": ["test/*"]
-		},
-		"types": ["node"]
-	},
+  "exclude": ["dist/", "node_modules", "test", "vitest.config.js"],
+  "include": ["./src/**/*.ts", "./**/*.json"],
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2022",
+    "noEmit": false,
+    "composite": true,
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@src/*": ["./src/*"],
+      "@test/*": ["./test/*"]
+    },
+    "types": ["node"]
+  },
 
-	"ts-node": {
-		"esm": true
-	}
+  "ts-node": {
+    "esm": true
+  }
 }

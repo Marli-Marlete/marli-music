@@ -1,6 +1,8 @@
 import { Message } from 'discord.js';
+
+import { MarliMusic } from '@/bot/marli-music';
+
 import { Command } from './command';
-import { MarliMusic } from 'bot/marli-music';
 import { ListQueue } from './command-list-queue';
 
 export class Shuffle extends Command {

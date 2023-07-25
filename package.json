@@ -8,7 +8,7 @@
   "scripts": {
     "start": "tsx src/index.ts",
     "start:watch": "tsx watch src/index.ts",
-    "build": "yarn tsc",
+    "build": "yarn tsc --project tsconfig.json && tscpaths -p tsconfig.json -s ./src -o ./dist/src",
     "lint": "eslint .",
     "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx .",
     "format": "prettier --config .prettierrc './**/*.ts' --write",
@@ -58,6 +58,7 @@
     "prettier-eslint": "^15.0.1",
     "supertest": "^6.3.3",
     "ts-node": "^10.9.1",
+    "tscpaths": "^0.0.9",
     "tsx": "^3.12.6",
     "typescript": "^5.0.4",
     "vitest": "^0.30.1"

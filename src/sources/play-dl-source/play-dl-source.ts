@@ -5,13 +5,13 @@ import play, {
   YouTubeVideo,
 } from 'play-dl';
 
+import { BotError, ERRORS } from '@/shared/errors';
+
 import {
   ResultAudioSearch,
   SerachOptionsParams,
   SourceStream,
 } from '../source-stream';
-
-import { BotError, ERRORS } from '../../shared/errors';
 
 const validStreamTypes = ['yt_video', 'sp_track'];
 
