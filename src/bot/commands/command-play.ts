@@ -46,24 +46,24 @@ export class Play extends Command {
 
       const player = this.getPlayer(voiceMember.channelId);
       connection.subscribe(player);
+
       const queue = this.getQueue();
+      queue.add(voiceMember.channelId, {
+        audioResource,
+        streamInfo,
+        userSearch: input,
+      });
+
+      let replyContent = `${message.author.username} ${BOT_MESSAGES.PUSHED_TO_QUEUE} ${streamInfo.title}`;
 
       if (player.state.status === AudioPlayerStatus.Idle) {
         player.play(audioResource);
         const playHook = new PlayHook(this.bot);
         playHook.execute(message);
-        await message.reply({
-          content: `${message.author.username} ${BOT_MESSAGES.CURRENT_PLAYING} ${streamInfo.title}`,
-        });
-      } else {
-        queue.add(voiceMember.channelId, {
-          audioResource,
-          streamInfo,
-        });
-        await message.reply({
-          content: `${message.author.username} ${BOT_MESSAGES.PUSHED_TO_QUEUE} ${streamInfo.title}`,
-        });
+        replyContent = `${message.author.username} ${BOT_MESSAGES.CURRENT_PLAYING} ${streamInfo.title}`;
       }
+
+      await message.channel.send(replyContent);
     } catch (err) {
       await this.sendCommandError(err, message);
     }
