@@ -23,6 +23,8 @@ export interface SourceStream {
     input: string,
     options?: SerachOptionsParams
   ): ResultAudioSearch[] | Promise<ResultAudioSearch[]>;
-  getStreamFromUrl(url: string): Promise<StreamInfo[]>;
+  getStreamFromUrl(url: string): Promise<StreamInfo> | Promise<StreamInfo[]>;
+  getTrack(url: string): Promise<StreamInfo>;
+  getPlaylistTracks(url: string): Promise<StreamInfo[]>;
   validate(input: string): Promise<boolean>;
 }

@@ -58,6 +58,36 @@ export class PlayDlSourceStream implements SourceStream {
     }
   }
 
+  async getPlaylistTracks(url: string) {
+    const playlist = (await play.spotify(url.trim())) as SpotifyPlaylist;
+
+    const tracks = await playlist.all_tracks();
+
+    const spotifyTracks = tracks.map((track) => ({
+      title: track.name,
+      url: undefined,
+      artist: String(track?.artists[0].name) ?? undefined,
+    }));
+
+    return spotifyTracks;
+  }
+
+  async getTrack(url: string) {
+    const spotifyInfo = (await play.spotify(url.trim())) as SpotifyTrack;
+
+    const searched = await this.search(
+      `${spotifyInfo.name} - ${spotifyInfo.artists[0].name}`,
+      {
+        limit: 1,
+      }
+    );
+
+    return {
+      title: spotifyInfo.name,
+      url: searched[0].url,
+    };
+  }
+
   async getStreamFromUrl(url: string) {
     try {
       if (!url?.trim().startsWith('https')) return;
@@ -71,46 +101,20 @@ export class PlayDlSourceStream implements SourceStream {
       }
 
       if (this.streamType === 'sp_playlist') {
-        const playlist = (await play.spotify(url.trim())) as SpotifyPlaylist;
-
-        const tracks = await playlist.all_tracks();
-
-        const spotifyTracks = tracks.map((track) => ({
-          title: track.name,
-          url: undefined,
-          artist: String(track?.artists[0].name) ?? undefined,
-        }));
-
-        return spotifyTracks;
+        return this.getPlaylistTracks(url);
       }
 
       if (this.streamType === 'sp_track') {
-        const spotifyInfo = (await play.spotify(url.trim())) as SpotifyTrack;
-
-        const searched = await this.search(
-          `${spotifyInfo.name} - ${spotifyInfo.artists[0].name}`,
-          {
-            limit: 1,
-          }
-        );
-
-        return [
-          {
-            title: spotifyInfo.name,
-            url: searched[0].url,
-          },
-        ];
+        return this.getTrack(url);
       }
 
       if (this.streamType === 'yt_video') {
         const videoInfo = await play.video_info(url);
 
-        return [
-          {
-            title: videoInfo.video_details.title,
-            url: videoInfo.video_details.url,
-          },
-        ];
+        return {
+          title: videoInfo.video_details.title,
+          url: videoInfo.video_details.url,
+        };
       }
     } catch (e) {
       throw new BotError(e.stack || e.message, ERRORS.RESULT_NOT_FOUND);
