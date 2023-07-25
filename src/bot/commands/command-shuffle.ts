@@ -1,4 +1,3 @@
-import { MarliMusic } from 'bot/marli-music';
 import { Message } from 'discord.js';
 
 import { MarliMusic } from '@/bot/marli-music';
