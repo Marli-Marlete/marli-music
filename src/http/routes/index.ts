@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { join } from 'path';
 
-import { logger } from '../../config/winston';
+import { logger } from '@/config/winston';
 
 const mainRouter: Router = Router();
 

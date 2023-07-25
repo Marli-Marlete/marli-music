@@ -1,6 +1,8 @@
 import { MarliMusic } from 'bot/marli-music';
 import { Message } from 'discord.js';
 
+import { MarliMusic } from '@/bot/marli-music';
+
 import { Command } from './command';
 import { ListQueue } from './command-list-queue';
 

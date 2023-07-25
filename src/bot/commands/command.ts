@@ -1,10 +1,12 @@
 import { Message } from 'discord.js';
+
+import { sentryCapture } from '@/config/sentry';
+import { logger } from '@/config/winston';
+import { BotError, ERRORS } from '@/shared/errors';
 import { AudioPlayer, getVoiceConnection } from '@discordjs/voice';
+
 import { BOT_MESSAGES } from '../containts/default-messages';
 import { MarliMusic } from '../marli-music';
-import { BotError, ERRORS } from '../../shared/errors';
-import { logger } from '../../config/winston';
-import { sentryCapture } from '../../config/sentry';
 
 export abstract class Command {
   name: string;

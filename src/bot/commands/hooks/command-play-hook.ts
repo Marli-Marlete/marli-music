@@ -1,12 +1,12 @@
 import { Message } from 'discord.js';
 
+import { BOT_MESSAGES } from '@/bot/containts/default-messages';
+import { MarliMusic } from '@/bot/marli-music';
+import { logger } from '@/config/winston';
+import { BotError } from '@/shared/errors';
 import { AudioPlayerStatus, VoiceConnectionStatus } from '@discordjs/voice';
 
-import { logger } from '../../../config/winston';
-import { BOT_MESSAGES } from '../../containts/default-messages';
 import { Command } from '../command';
-import { MarliMusic } from '../../marli-music';
-import { BotError } from '../../../shared/errors';
 import { Skip } from '../command-skip';
 
 export class PlayHook extends Command {
