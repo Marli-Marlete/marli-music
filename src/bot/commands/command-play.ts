@@ -1,4 +1,6 @@
 import { Message } from 'discord.js';
+
+import { StreamInfo } from '@/sources/source-stream';
 import {
   AudioPlayerStatus,
   createAudioResource,
@@ -6,11 +8,10 @@ import {
   StreamType,
 } from '@discordjs/voice';
 
-import { StreamInfo } from '../../sources/source-stream';
 import { BOT_MESSAGES } from '../containts/default-messages';
-import { PlayHook } from './hooks/command-play-hook';
 import { MarliMusic } from '../marli-music';
 import { Command } from './command';
+import { PlayHook } from './hooks/command-play-hook';
 
 export class Play extends Command {
   constructor(bot: MarliMusic) {
