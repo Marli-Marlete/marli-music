@@ -25,7 +25,10 @@ jobs:
           cache: 'npm'
       - run: yarn
       - run: yarn build
-  
+
+      - name: Execute Unit tests
+      - run: yarn test
+
       - name: ssh deploy
         uses: easingthemes/ssh-deploy@v4.1.8
         env:
@@ -33,7 +36,7 @@ jobs:
           REMOTE_HOST: ${{ secrets.HOST_DNS }}
           REMOTE_USER: ${{ secrets.USERNAME }}
           TARGET: ${{ secrets.TARGET_DIR }}
-          EXCLUDE: ".git/, /node_modules/"
+          EXCLUDE: '.git/, /node_modules/'
           SCRIPT_BEFORE: |
             source ~/.nvm/nvm.sh; npm install pm2 -g
             source ~/.nvm/nvm.sh; npm install yarn -g
