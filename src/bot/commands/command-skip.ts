@@ -16,8 +16,8 @@ export class Skip extends Command {
       const player = this.getPlayer(connectionID);
       const queue = this.getQueue();
       const playlist = queue.getList(connectionID);
-      if (playlist.length) {
-        const next = playlist[0];
+      if (playlist?.length > 1) {
+        const next = playlist[1];
         await message.reply(
           `${BOT_MESSAGES.MUSIC_SKIPPED} ${next.streamInfo.title}`
         );

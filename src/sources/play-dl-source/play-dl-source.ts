@@ -6,7 +6,8 @@ import play, {
   YouTubeVideo,
 } from 'play-dl';
 
-import { BotError, ERRORS } from '../../shared/errors';
+import { BotError, ERRORS } from '@/shared/errors';
+
 import {
   ResultAudioSearch,
   SerachOptionsParams,

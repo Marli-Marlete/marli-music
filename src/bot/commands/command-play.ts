@@ -1,5 +1,6 @@
 import { Message } from 'discord.js';
 
+import { StreamInfo } from '@/sources/source-stream';
 import {
   AudioPlayerStatus,
   createAudioResource,
@@ -7,7 +8,6 @@ import {
   StreamType,
 } from '@discordjs/voice';
 
-import { StreamInfo } from '../../sources/source-stream';
 import { BOT_MESSAGES } from '../containts/default-messages';
 import { MarliMusic } from '../marli-music';
 import { Command } from './command';
@@ -22,21 +22,16 @@ export class Play extends Command {
     try {
       await this.validate(message, input);
       const source = this.getSourceStream();
-      const queue = this.getQueue();
 
-      const videos = await source.getStreamFromUrl(input);
-      let searchResult = videos ?? (await source.search(input));
+      const video = await source.getStreamFromUrl(input);
+      const searchResult = video ?? (await source.search(input));
 
-      if (videos[0].artist) {
-        searchResult = await source.search(
-          `${videos[0].title} - ${videos[0].artist}`,
-          {
-            limit: 1,
-          }
-        );
-      }
+      const streamInfo: StreamInfo = {
+        title: video?.title || searchResult[0].title,
+        url: video?.url || searchResult[0].url,
+      };
 
-      const stream = await source.getStream(searchResult[0]?.url);
+      const stream = await source.getStream(video?.url ?? searchResult[0].url);
 
       const audioResource = createAudioResource(stream, {
         inputType: StreamType.Opus,
@@ -50,39 +45,26 @@ export class Play extends Command {
         guildId: String(voiceMember.guild.id),
       });
 
-      if (videos[0].artist) {
-        videos.map(async (currentStream) => {
-          queue.add(voiceMember.channelId, {
-            audioResource,
-            streamInfo: currentStream,
-          });
-        });
-      }
-
       const player = this.getPlayer(voiceMember.channelId);
-
       connection.subscribe(player);
+
+      const queue = this.getQueue();
+      queue.add(voiceMember.channelId, {
+        audioResource,
+        streamInfo,
+        userSearch: input,
+      });
+
+      let replyContent = `${message.author.username} ${BOT_MESSAGES.PUSHED_TO_QUEUE} ${streamInfo.title}`;
 
       if (player.state.status === AudioPlayerStatus.Idle) {
         player.play(audioResource);
-
         const playHook = new PlayHook(this.bot);
-
         playHook.execute(message);
-
-        await message.reply({
-          content: `${message.author.username} ${BOT_MESSAGES.CURRENT_PLAYING} ${searchResult[0].title}`,
-        });
-      } else {
-        queue.add(voiceMember.channelId, {
-          audioResource,
-          streamInfo: searchResult[0],
-        });
-
-        await message.reply({
-          content: `${message.author.username} ${BOT_MESSAGES.PUSHED_TO_QUEUE} ${searchResult[0].title}`,
-        });
+        replyContent = `${message.author.username} ${BOT_MESSAGES.CURRENT_PLAYING} ${streamInfo.title}`;
       }
+
+      await message.channel.send(replyContent);
     } catch (err) {
       await this.sendCommandError(err, message);
     }
