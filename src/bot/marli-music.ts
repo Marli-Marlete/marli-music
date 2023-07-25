@@ -1,15 +1,15 @@
 import { Client, ClientOptions, Message } from 'discord.js';
 
+import { sentryCapture } from '@/config/sentry';
+import { logger } from '@/config/winston';
+import { Queue } from '@/queue/queue';
+import { ERRORS } from '@/shared/errors';
+import { SourceStream } from '@/sources/source-stream';
 import { AudioPlayer } from '@discordjs/voice';
 
-import { sentryCapture } from '../config/sentry';
-import { logger } from '../config/winston';
-import { Queue } from '../queue/queue';
-import { ERRORS } from '../shared/errors';
-import { SourceStream } from '../sources/source-stream';
-import { BOT_MESSAGES } from './containts/default-messages';
 import { ALL_COMMANDS, Command } from './commands';
 import { CommandHelp } from './commands/command-help';
+import { BOT_MESSAGES } from './containts/default-messages';
 
 export interface BotInfo {
   prefix: string;
