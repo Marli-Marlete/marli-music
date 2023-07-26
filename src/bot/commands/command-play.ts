@@ -48,7 +48,7 @@ export class Play extends Command {
       const player = this.getPlayer(voiceMember.channelId);
       connection.subscribe(player);
 
-      let replyContent = `${message.author.username} ${BOT_MESSAGES.PUSHED_TO_QUEUE} ${searchResult[0].title}`;
+      let replyContent = `${message.author.username} ${BOT_MESSAGES.PUSHED_TO_QUEUE} ${searchResult[0].title} - ${searchResult[0].artist}`;
 
       if (player.state.status === AudioPlayerStatus.Idle) {
         let url = searchResult[0].url;

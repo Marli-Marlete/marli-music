@@ -1,6 +1,7 @@
 import { Message } from 'discord.js';
-import { Command } from './command';
+
 import { BOT_MESSAGES } from '../containts/default-messages';
+import { Command } from './command';
 
 export class ListQueue extends Command {
   async execute(message: Message<boolean>): Promise<void> {
@@ -12,7 +13,12 @@ export class ListQueue extends Command {
       const content = !queueList?.length
         ? BOT_MESSAGES.PLAYLIST_EMPTY
         : queueList
-            .map((item, index) => `\n${index + 1} - ${item.streamInfo.title}`)
+            .map(
+              (item, index) =>
+                `\n${index + 1} - ${item.streamInfo.title} - ${
+                  item.streamInfo.artist
+                }`
+            )
             .join(' ');
       await message.reply(content);
     } catch (error) {
