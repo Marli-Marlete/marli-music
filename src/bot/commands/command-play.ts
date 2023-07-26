@@ -69,7 +69,7 @@ export class Play extends Command {
 
         playHook.execute(message);
 
-        replyContent = `${message.author.username} ${BOT_MESSAGES.CURRENT_PLAYING} ${searchResult[0].title}`;
+        replyContent = `${message.author.username} ${BOT_MESSAGES.CURRENT_PLAYING} ${searchResult[0].title} - ${searchResult[0].artist}`;
       }
 
       await message.channel.send(replyContent);
