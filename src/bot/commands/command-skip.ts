@@ -1,4 +1,7 @@
 import { Message } from 'discord.js';
+
+import { ResultAudioSearch } from '@/sources/source-stream';
+
 import { BOT_MESSAGES } from '../containts/default-messages';
 import { MarliMusic } from '../marli-music';
 import { Command } from './command';
@@ -18,10 +21,24 @@ export class Skip extends Command {
       const playlist = queue.getList(connectionID);
       if (playlist?.length > 1) {
         const next = playlist[1];
+
+        if (!next.streamInfo?.url) {
+          const search = (await this.getSourceStream().search(
+            `${next.streamInfo.title} ${next.streamInfo.artist}`,
+            {
+              limit: 1,
+            }
+          )) as ResultAudioSearch;
+
+          next.streamInfo.url = search.url;
+        }
+
+        const audioResource = await this.getAudioResource(next.streamInfo.url);
+
         await message.reply(
-          `${BOT_MESSAGES.MUSIC_SKIPPED} ${next.streamInfo.title}`
+          `${BOT_MESSAGES.MUSIC_SKIPPED} ${next.streamInfo.title} - ${next.streamInfo.artist}`
         );
-        player.play(next.audioResource);
+        player.play(audioResource);
         queue.pop(connectionID);
       } else {
         player.removeAllListeners();

@@ -1,10 +1,5 @@
 import { Readable } from 'node:stream';
-import play, {
-  SpotifyPlaylist,
-  SpotifyTrack,
-  validate as validateStreamUrl,
-  YouTubeVideo,
-} from 'play-dl';
+import play, { validate as validateStreamUrl, YouTubeVideo } from 'play-dl';
 
 import { BotError, ERRORS } from '@/shared/errors';
 
@@ -13,6 +8,7 @@ import {
   SerachOptionsParams,
   SourceStream,
 } from '../source-stream';
+import { playDlStrategies } from './strategies/strategy';
 
 const youtubeStreamTypes = ['yt_video'];
 const spotifyStreamTypes = ['sp_track', 'sp_playlist'];
@@ -36,7 +32,7 @@ export class PlayDlSourceStream implements SourceStream {
   async search(
     input: string,
     options?: SerachOptionsParams
-  ): Promise<ResultAudioSearch[]> {
+  ): Promise<ResultAudioSearch | ResultAudioSearch[]> {
     try {
       const result = await play.search(input, {
         ...(options?.limit && { limit: options.limit }),
@@ -47,45 +43,21 @@ export class PlayDlSourceStream implements SourceStream {
 
       if (!result.length) throw new Error(ERRORS.RESULT_NOT_FOUND);
 
-      return result.map((video: YouTubeVideo) => ({
+      const resultMap = result.map((video: YouTubeVideo) => ({
         duration: video.durationRaw.toString(),
         id: video.id,
         title: video.title,
         url: video.url,
       }));
+
+      if (options?.limit === 1) {
+        return resultMap[0];
+      }
+
+      return resultMap;
     } catch (e) {
       throw new BotError(e.stack || e.message, ERRORS.RESULT_NOT_FOUND);
     }
-  }
-
-  async getPlaylistTracks(url: string) {
-    const playlist = (await play.spotify(url.trim())) as SpotifyPlaylist;
-
-    const tracks = await playlist.all_tracks();
-
-    const spotifyTracks = tracks.map((track) => ({
-      title: track.name,
-      url: undefined,
-      artist: String(track?.artists[0].name) ?? undefined,
-    }));
-
-    return spotifyTracks;
-  }
-
-  async getTrack(url: string) {
-    const spotifyInfo = (await play.spotify(url.trim())) as SpotifyTrack;
-
-    const searched = await this.search(
-      `${spotifyInfo.name} - ${spotifyInfo.artists[0].name}`,
-      {
-        limit: 1,
-      }
-    );
-
-    return {
-      title: spotifyInfo.name,
-      url: searched[0].url,
-    };
   }
 
   async getStreamFromUrl(url: string) {
@@ -100,22 +72,9 @@ export class PlayDlSourceStream implements SourceStream {
         await play.refreshToken();
       }
 
-      if (this.streamType === 'sp_playlist') {
-        return this.getPlaylistTracks(url);
-      }
+      const Strategy = playDlStrategies[this.streamType];
 
-      if (this.streamType === 'sp_track') {
-        return this.getTrack(url);
-      }
-
-      if (this.streamType === 'yt_video') {
-        const videoInfo = await play.video_info(url);
-
-        return {
-          title: videoInfo.video_details.title,
-          url: videoInfo.video_details.url,
-        };
-      }
+      return new Strategy(this).getStreamInfo(url);
     } catch (e) {
       throw new BotError(e.stack || e.message, ERRORS.RESULT_NOT_FOUND);
     }

@@ -3,7 +3,12 @@ import { Message } from 'discord.js';
 import { sentryCapture } from '@/config/sentry';
 import { logger } from '@/config/winston';
 import { BotError, ERRORS } from '@/shared/errors';
-import { AudioPlayer, getVoiceConnection } from '@discordjs/voice';
+import {
+  AudioPlayer,
+  createAudioResource,
+  getVoiceConnection,
+  StreamType,
+} from '@discordjs/voice';
 
 import { BOT_MESSAGES } from '../containts/default-messages';
 import { MarliMusic } from '../marli-music';
@@ -14,6 +19,16 @@ export abstract class Command {
   constructor(protected bot: MarliMusic) {}
 
   abstract execute(message: Message, input?: string): Promise<void>;
+
+  async getAudioResource(url: string) {
+    const source = this.getSourceStream();
+
+    const stream = await source.getStream(url);
+
+    return createAudioResource(stream, {
+      inputType: StreamType.Opus,
+    });
+  }
 
   getPlayer(connectionID: string): AudioPlayer {
     return this.bot.getPlayer(connectionID);

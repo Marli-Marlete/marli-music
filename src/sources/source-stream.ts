@@ -18,13 +18,11 @@ export interface SerachOptionsParams {
 }
 
 export interface SourceStream {
-  getStream(url: string): Readable | Promise<Readable>;
+  getStream(url: string): Promise<Readable>;
   search(
     input: string,
     options?: SerachOptionsParams
-  ): ResultAudioSearch[] | Promise<ResultAudioSearch[]>;
-  getStreamFromUrl(url: string): Promise<StreamInfo> | Promise<StreamInfo[]>;
-  getTrack(url: string): Promise<StreamInfo>;
-  getPlaylistTracks(url: string): Promise<StreamInfo[]>;
+  ): Promise<ResultAudioSearch[] | ResultAudioSearch>;
+  getStreamFromUrl(url: string): Promise<StreamInfo[]>;
   validate(input: string): Promise<boolean>;
 }
