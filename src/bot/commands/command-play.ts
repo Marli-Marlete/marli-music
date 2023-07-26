@@ -39,6 +39,7 @@ export class Play extends Command {
           streamInfo: {
             title: streamInfo.title,
             url: streamInfo.url,
+            artist: streamInfo.artist,
           },
           userSearch: input,
         });
