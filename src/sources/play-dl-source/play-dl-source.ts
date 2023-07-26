@@ -48,10 +48,11 @@ export class PlayDlSourceStream implements SourceStream {
         id: video.id,
         title: video.title,
         url: video.url,
+        artist: video.channel?.name || video?.music[0]?.artist,
       }));
 
       if (options?.limit === 1) {
-        return resultMap[0];
+        return [resultMap[0]];
       }
 
       return resultMap;
