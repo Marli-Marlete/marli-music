@@ -32,7 +32,8 @@ export class Play extends Command {
       const video = await source.getStreamFromUrl(input);
 
       const searchResult =
-        video ?? ((await source.search(input)) as Array<StreamInfo>);
+        video ??
+        ((await source.search(input, { limit: 1 })) as Array<StreamInfo>);
 
       searchResult.forEach((streamInfo: StreamInfo) => {
         queue.add(voiceMember.channelId, {
