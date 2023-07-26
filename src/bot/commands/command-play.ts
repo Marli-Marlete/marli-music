@@ -52,19 +52,14 @@ export class Play extends Command {
       let replyContent = `${message.author.username} ${BOT_MESSAGES.PUSHED_TO_QUEUE} ${searchResult[0].title} - ${searchResult[0].artist}`;
 
       if (player.state.status === AudioPlayerStatus.Idle) {
-        let url = searchResult[0].url;
-        if (!searchResult[0]?.url) {
-          const search = (await this.getSourceStream().search(
-            `${searchResult[0].title} ${searchResult[0].artist}`,
-            {
-              limit: 1,
-            }
-          )) as ResultAudioSearch;
+        const searchResultUrl =
+          searchResult[0]?.url ??
+          (await this.getResourceUrl(
+            searchResult[0].title,
+            searchResult[0].artist
+          ));
 
-          url = search.url;
-        }
-
-        player.play(await this.getAudioResource(url));
+        player.play(await this.getAudioResource(searchResultUrl));
 
         const playHook = new PlayHook(this.bot);
 

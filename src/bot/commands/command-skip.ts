@@ -23,14 +23,10 @@ export class Skip extends Command {
         const next = playlist[1];
 
         if (!next.streamInfo?.url) {
-          const search = (await this.getSourceStream().search(
-            `${next.streamInfo.title} ${next.streamInfo.artist}`,
-            {
-              limit: 1,
-            }
-          )) as ResultAudioSearch;
-
-          next.streamInfo.url = search.url;
+          next.streamInfo.url = await this.getResourceUrl(
+            next.streamInfo.title,
+            next.streamInfo.artist
+          );
         }
 
         const audioResource = await this.getAudioResource(next.streamInfo.url);
