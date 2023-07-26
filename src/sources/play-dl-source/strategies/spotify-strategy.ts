@@ -11,8 +11,6 @@ export class SpotifyTrackStrategy implements IStrategy {
   async getStreamInfo(url: string): Promise<StreamInfo[]> {
     const spotifyInfo = (await play.spotify(url.trim())) as SpotifyTrack;
 
-    console.log({ spotifyInfo });
-
     const searched = (await this.playDlSourceStream.search(
       `${spotifyInfo.name} - ${spotifyInfo?.artists[0]?.name}`,
       {
@@ -24,7 +22,7 @@ export class SpotifyTrackStrategy implements IStrategy {
       {
         title: spotifyInfo.name,
         url: searched.url,
-        artist: spotifyInfo?.artists[0]?.name,
+        artist: spotifyInfo?.artists[0].name,
       },
     ];
   }
@@ -39,7 +37,7 @@ export class SpotifyPlaylistStrategy implements IStrategy {
     const spotifyTracks = tracks.map((track) => ({
       title: track.name,
       url: undefined,
-      artist: String(track?.artists[0].name) ?? undefined,
+      artist: track?.artists[0].name,
     }));
 
     return spotifyTracks;
