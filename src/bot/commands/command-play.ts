@@ -29,13 +29,13 @@ export class Play extends Command {
 
       const queue = this.getQueue();
 
-      const video = await source.getStreamFromUrl(input);
+      const searchedStream = await source.getStreamFromUrl(input);
 
-      const searchResult =
-        video ??
-        ((await source.search(input, { limit: 1 })) as Array<StreamInfo>);
+      const streamInfoCollection =
+        searchedStream ??
+        ((await source.search(input, { limit: 1 })) as StreamInfo[]);
 
-      searchResult.forEach((streamInfo: StreamInfo) => {
+      streamInfoCollection.forEach((streamInfo: StreamInfo) => {
         queue.add(voiceMember.channelId, {
           streamInfo: {
             title: streamInfo.title,
@@ -46,18 +46,17 @@ export class Play extends Command {
         });
       });
 
+      const firstSong = streamInfoCollection.shift();
+
       const player = this.getPlayer(voiceMember.channelId);
       connection.subscribe(player);
 
-      let replyContent = `${message.author.username} ${BOT_MESSAGES.PUSHED_TO_QUEUE} ${searchResult[0].title} - ${searchResult[0].artist}`;
+      let replyContent = `${message.author.username} ${BOT_MESSAGES.PUSHED_TO_QUEUE} ${firstSong.title} - ${firstSong.artist}`;
 
       if (player.state.status === AudioPlayerStatus.Idle) {
         const searchResultUrl =
-          searchResult[0]?.url ??
-          (await this.getResourceUrl(
-            searchResult[0].title,
-            searchResult[0].artist
-          ));
+          firstSong?.url ??
+          (await this.getResourceUrl(firstSong.title, firstSong.artist));
 
         player.play(await this.getAudioResource(searchResultUrl));
 
@@ -65,7 +64,7 @@ export class Play extends Command {
 
         playHook.execute(message);
 
-        replyContent = `${message.author.username} ${BOT_MESSAGES.CURRENT_PLAYING} ${searchResult[0].title} - ${searchResult[0].artist}`;
+        replyContent = `${message.author.username} ${BOT_MESSAGES.CURRENT_PLAYING} ${firstSong.title} - ${firstSong.artist}`;
       }
 
       await message.channel.send(replyContent);

@@ -1,7 +1,5 @@
 import { Message } from 'discord.js';
 
-import { ResultAudioSearch } from '@/sources/source-stream';
-
 import { BOT_MESSAGES } from '../containts/default-messages';
 import { MarliMusic } from '../marli-music';
 import { Command } from './command';

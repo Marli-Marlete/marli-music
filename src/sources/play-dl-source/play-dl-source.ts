@@ -32,7 +32,7 @@ export class PlayDlSourceStream implements SourceStream {
   async search(
     input: string,
     options?: SerachOptionsParams
-  ): Promise<ResultAudioSearch | ResultAudioSearch[]> {
+  ): Promise<ResultAudioSearch[]> {
     try {
       const result = await play.search(input, {
         ...(options?.limit && { limit: options.limit }),
@@ -48,11 +48,11 @@ export class PlayDlSourceStream implements SourceStream {
         id: video.id,
         title: video.title,
         url: video.url,
-        artist: video.channel?.name || video?.music[0]?.artist,
+        artist: video.channel?.name || video?.music.shift()?.artist,
       }));
 
       if (options?.limit === 1) {
-        return [resultMap[0]];
+        return [resultMap.shift()];
       }
 
       return resultMap;

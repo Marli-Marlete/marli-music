@@ -14,7 +14,7 @@ export class YoutubeStrategy implements IStrategy {
         url: videoInfo.video_details.url,
         artist:
           String(videoInfo.video_details.channel.name) ||
-          String(videoInfo.video_details.music[0].artist),
+          String(videoInfo.video_details.music.shift().artist),
       },
     ];
   }

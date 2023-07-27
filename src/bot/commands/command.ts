@@ -3,7 +3,6 @@ import { Message } from 'discord.js';
 import { sentryCapture } from '@/config/sentry';
 import { logger } from '@/config/winston';
 import { BotError, ERRORS } from '@/shared/errors';
-import { ResultAudioSearch } from '@/sources/source-stream';
 import {
   AudioPlayer,
   createAudioResource,
@@ -38,7 +37,7 @@ export abstract class Command {
       await source.search(`${title} ${artist}`, {
         limit: 1,
       })
-    )[0] as ResultAudioSearch;
+    ).shift();
 
     return search.url;
   }
