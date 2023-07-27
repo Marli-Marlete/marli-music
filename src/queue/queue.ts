@@ -1,11 +1,9 @@
 import { StreamInfo } from '@/sources/source-stream';
-import { AudioResource } from '@discordjs/voice';
 
 import { shuffleArray } from '../helpers/helpers';
 
 export interface QueueData {
   streamInfo: StreamInfo;
-  audioResource: AudioResource;
   userSearch: string;
 }
 

@@ -8,3 +8,4 @@ data
 logs
 coverage
 .data
+auth.js

@@ -17,3 +17,32 @@ export function shuffleArray<T>(array: Array<T>): T[] {
 
   return array;
 }
+
+export function fragmentContent(
+  itemsToShow: string,
+  limit = 1000,
+  delimiter = ''
+): string[] {
+  const contentLengh = itemsToShow.length;
+  const parts = Math.ceil(contentLengh / limit);
+
+  let count = 1;
+  let initRange = 0;
+  const result: string[] = [];
+  while (count <= parts) {
+    let finalRange = initRange + limit;
+    if (delimiter && finalRange[finalRange - 1] !== delimiter) {
+      const lastIndexOfDelimiter = itemsToShow.lastIndexOf(
+        delimiter,
+        finalRange
+      );
+      finalRange = lastIndexOfDelimiter + delimiter.length;
+    }
+    const fragment = itemsToShow.slice(initRange, finalRange);
+    result.push(fragment);
+    initRange = finalRange;
+    count++;
+  }
+
+  return result;
+}

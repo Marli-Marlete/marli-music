@@ -1,9 +1,5 @@
 import { Readable } from 'node:stream';
-import play, {
-  SpotifyTrack,
-  validate as validateStreamUrl,
-  YouTubeVideo,
-} from 'play-dl';
+import play, { validate as validateStreamUrl, YouTubeVideo } from 'play-dl';
 
 import { BotError, ERRORS } from '@/shared/errors';
 
@@ -12,11 +8,14 @@ import {
   SerachOptionsParams,
   SourceStream,
 } from '../source-stream';
+import { playDlStrategies } from './strategies/strategy';
 
-const validStreamTypes = ['yt_video', 'sp_track'];
+const youtubeStreamTypes = ['yt_video'];
+const spotifyStreamTypes = ['sp_track', 'sp_playlist'];
+const validStreamTypes = [...youtubeStreamTypes, ...spotifyStreamTypes];
 
 export class PlayDlSourceStream implements SourceStream {
-  streamType: string | false = 'sp_track';
+  streamType = 'sp_track';
 
   async getStream(input: string): Promise<Readable> {
     try {
@@ -44,12 +43,19 @@ export class PlayDlSourceStream implements SourceStream {
 
       if (!result.length) throw new Error(ERRORS.RESULT_NOT_FOUND);
 
-      return result.map((video: YouTubeVideo) => ({
+      const resultMap = result.map((video: YouTubeVideo) => ({
         duration: video.durationRaw.toString(),
         id: video.id,
         title: video.title,
         url: video.url,
+        artist: video.channel?.name || video?.music.shift()?.artist,
       }));
+
+      if (options?.limit === 1) {
+        return [resultMap.shift()];
+      }
+
+      return resultMap;
     } catch (e) {
       throw new BotError(e.stack || e.message, ERRORS.RESULT_NOT_FOUND);
     }
@@ -57,49 +63,28 @@ export class PlayDlSourceStream implements SourceStream {
 
   async getStreamFromUrl(url: string) {
     try {
-      if (!url.trim().startsWith('https')) return;
+      if (!url?.trim().startsWith('https')) return;
 
       const validUrl = await this.validate(url);
 
       if (!validUrl) throw new Error(ERRORS.INVALID_URL);
 
-      if (this.streamType === 'sp_track') {
-        if (play.is_expired()) {
-          await play.refreshToken();
-        }
-
-        const spotifyInfo = (await play.spotify(url.trim())) as SpotifyTrack;
-
-        const searched = await this.search(
-          `${spotifyInfo.name} - ${spotifyInfo.artists[0].name}`,
-          {
-            limit: 1,
-          }
-        );
-
-        return {
-          title: spotifyInfo.name,
-          url: searched[0].url,
-        };
+      if (spotifyStreamTypes.includes(this.streamType) && play.is_expired()) {
+        await play.refreshToken();
       }
 
-      if (this.streamType === 'yt_video') {
-        const videoInfo = await play.video_info(url);
+      const Strategy = playDlStrategies[this.streamType];
 
-        return {
-          title: videoInfo.video_details.title,
-          url: videoInfo.video_details.url,
-        };
-      }
+      return new Strategy(this).getStreamInfo(url);
     } catch (e) {
       throw new BotError(e.stack || e.message, ERRORS.RESULT_NOT_FOUND);
     }
   }
 
   async validate(input: string): Promise<boolean> {
-    this.streamType = await validateStreamUrl(input);
+    this.streamType = String(await validateStreamUrl(input));
 
-    if (this.streamType === false) return false;
+    if (Boolean(this.streamType) === false) return false;
 
     return validStreamTypes.includes(this.streamType);
   }

@@ -1,12 +1,7 @@
 import { Message } from 'discord.js';
 
 import { StreamInfo } from '@/sources/source-stream';
-import {
-  AudioPlayerStatus,
-  createAudioResource,
-  joinVoiceChannel,
-  StreamType,
-} from '@discordjs/voice';
+import { AudioPlayerStatus, joinVoiceChannel } from '@discordjs/voice';
 
 import { BOT_MESSAGES } from '../containts/default-messages';
 import { MarliMusic } from '../marli-music';
@@ -21,21 +16,6 @@ export class Play extends Command {
   async execute(message: Message, input: string) {
     try {
       await this.validate(message, input);
-      const source = this.getSourceStream();
-
-      const video = await source.getStreamFromUrl(input);
-      const searchResult = video ?? (await source.search(input));
-
-      const streamInfo: StreamInfo = {
-        title: video?.title || searchResult[0].title,
-        url: video?.url || searchResult[0].url,
-      };
-
-      const stream = await source.getStream(video?.url ?? searchResult[0].url);
-
-      const audioResource = createAudioResource(stream, {
-        inputType: StreamType.Opus,
-      });
 
       const voiceMember = message.member.voice;
 
@@ -45,23 +25,42 @@ export class Play extends Command {
         guildId: String(voiceMember.guild.id),
       });
 
+      const source = this.getSourceStream();
+
+      const queue = this.getQueue();
+
+      const searchedStream = await source.getStreamFromUrl(input);
+
+      const streamInfoCollection =
+        searchedStream ??
+        ((await source.search(input, { limit: 1 })) as StreamInfo[]);
+
+      streamInfoCollection.forEach((streamInfo: StreamInfo) => {
+        queue.add(voiceMember.channelId, {
+          streamInfo,
+          userSearch: input,
+        });
+      });
+
+      const firstSong = streamInfoCollection.shift();
+
       const player = this.getPlayer(voiceMember.channelId);
       connection.subscribe(player);
 
-      const queue = this.getQueue();
-      queue.add(voiceMember.channelId, {
-        audioResource,
-        streamInfo,
-        userSearch: input,
-      });
-
-      let replyContent = `${message.author.username} ${BOT_MESSAGES.PUSHED_TO_QUEUE} ${streamInfo.title}`;
+      let replyContent = `${message.author.username} ${BOT_MESSAGES.PUSHED_TO_QUEUE} ${firstSong.title} - ${firstSong.artist}`;
 
       if (player.state.status === AudioPlayerStatus.Idle) {
-        player.play(audioResource);
+        const searchResultUrl =
+          firstSong?.url ??
+          (await this.getResourceUrl(firstSong.title, firstSong.artist));
+
+        player.play(await this.getAudioResource(searchResultUrl));
+
         const playHook = new PlayHook(this.bot);
+
         playHook.execute(message);
-        replyContent = `${message.author.username} ${BOT_MESSAGES.CURRENT_PLAYING} ${streamInfo.title}`;
+
+        replyContent = `${message.author.username} ${BOT_MESSAGES.CURRENT_PLAYING} ${firstSong.title} - ${firstSong.artist}`;
       }
 
       await message.channel.send(replyContent);
