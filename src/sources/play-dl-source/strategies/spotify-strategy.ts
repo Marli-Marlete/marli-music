@@ -1,6 +1,6 @@
 import play, { SpotifyPlaylist, SpotifyTrack } from 'play-dl';
 
-import { ResultAudioSearch, StreamInfo } from '@/sources/source-stream';
+import { StreamInfo } from '@/sources/source-stream';
 
 import { PlayDlSourceStream } from '../play-dl-source';
 import { IStrategy } from './strategy';
