@@ -19,6 +19,7 @@ export interface BotInfo {
 export class MarliMusic extends Client {
   prefix: string;
   players: Map<string, AudioPlayer> = new Map();
+  static MAX_REPLY_CONTENT_LENGTH = 2000;
 
   constructor(
     private botInfo: BotInfo,
