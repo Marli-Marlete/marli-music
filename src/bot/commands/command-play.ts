@@ -37,11 +37,7 @@ export class Play extends Command {
 
       streamInfoCollection.forEach((streamInfo: StreamInfo) => {
         queue.add(voiceMember.channelId, {
-          streamInfo: {
-            title: streamInfo.title,
-            url: streamInfo.url,
-            artist: streamInfo.artist,
-          },
+          streamInfo,
           userSearch: input,
         });
       });
