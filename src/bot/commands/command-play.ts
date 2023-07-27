@@ -1,6 +1,6 @@
 import { Message } from 'discord.js';
 
-import { ResultAudioSearch, StreamInfo } from '@/sources/source-stream';
+import { StreamInfo } from '@/sources/source-stream';
 import { AudioPlayerStatus, joinVoiceChannel } from '@discordjs/voice';
 
 import { BOT_MESSAGES } from '../containts/default-messages';
