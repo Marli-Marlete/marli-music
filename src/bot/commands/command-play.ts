@@ -1,5 +1,6 @@
 import { Message } from 'discord.js';
 
+import { createEmbedMessage } from '@/helpers/helpers';
 import { StreamInfo } from '@/sources/source-stream';
 import { AudioPlayerStatus, joinVoiceChannel } from '@discordjs/voice';
 
@@ -47,7 +48,7 @@ export class Play extends Command {
       const player = this.getPlayer(voiceMember.channelId);
       connection.subscribe(player);
 
-      let replyContent = `${message.author.username} ${BOT_MESSAGES.PUSHED_TO_QUEUE} ${firstSong.title} - ${firstSong.artist}`;
+      let replyContent = `${BOT_MESSAGES.PUSHED_TO_QUEUE}`;
 
       if (player.state.status === AudioPlayerStatus.Idle) {
         const searchResultUrl =
@@ -60,10 +61,29 @@ export class Play extends Command {
 
         playHook.execute(message);
 
-        replyContent = `${message.author.username} ${BOT_MESSAGES.CURRENT_PLAYING} ${firstSong.title} - ${firstSong.artist}`;
+        replyContent = `${BOT_MESSAGES.CURRENT_PLAYING}`;
       }
 
-      await message.channel.send(replyContent);
+      const embedMessage = createEmbedMessage({
+        url: firstSong?.source?.url ?? firstSong.url,
+        author: {
+          name: firstSong.artist,
+          url: firstSong.url,
+          icon_url: firstSong?.thumbnail?.url,
+        },
+        title: firstSong.title,
+        footer: {
+          text: message.author.username,
+        },
+        thumbnail: {
+          url: firstSong?.thumbnail?.url,
+        },
+      });
+
+      await message.channel.send({
+        content: replyContent,
+        embeds: [embedMessage],
+      });
     } catch (err) {
       await this.sendCommandError(err, message);
     }

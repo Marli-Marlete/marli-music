@@ -5,12 +5,25 @@ export interface ResultAudioSearch {
   duration: string;
   id: string;
   url: string;
+  artist?: string;
+  source?: {
+    url: string;
+  };
+  thumbnail?: {
+    url: string;
+  };
 }
 
 export interface StreamInfo {
   title: string;
   url?: string;
   artist?: string;
+  source?: {
+    url: string;
+  };
+  thumbnail?: {
+    url: string;
+  };
 }
 
 export interface SerachOptionsParams {
