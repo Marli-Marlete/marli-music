@@ -10,7 +10,7 @@ import {
 } from '../source-stream';
 import { playDlStrategies } from './strategies/strategy';
 
-const youtubeStreamTypes = ['yt_video'];
+const youtubeStreamTypes = ['yt_video', 'yt_playlist'];
 const spotifyStreamTypes = ['sp_track', 'sp_playlist'];
 const validStreamTypes = [...youtubeStreamTypes, ...spotifyStreamTypes];
 
