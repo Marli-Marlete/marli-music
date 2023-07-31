@@ -1,4 +1,4 @@
-import play, { SpotifyPlaylist, SpotifyTrack } from 'play-dl';
+import play, { SpotifyAlbum, SpotifyPlaylist, SpotifyTrack } from 'play-dl';
 
 import { StreamInfo } from '@/sources/source-stream';
 
@@ -35,6 +35,22 @@ export class SpotifyPlaylistStrategy implements IStrategy {
     const playlist = (await play.spotify(url.trim())) as SpotifyPlaylist;
 
     const tracks = await playlist.all_tracks();
+
+    const spotifyTracks = tracks.map((track) => ({
+      title: track.name,
+      url: undefined,
+      artist: track?.artists.shift().name,
+    }));
+
+    return spotifyTracks;
+  }
+}
+
+export class SpotifyAlbumStrategy implements IStrategy {
+  async getStreamInfo(url: string): Promise<StreamInfo[]> {
+    const album = (await play.spotify(url.trim())) as SpotifyAlbum;
+
+    const tracks = await album.all_tracks();
 
     const spotifyTracks = tracks.map((track) => ({
       title: track.name,

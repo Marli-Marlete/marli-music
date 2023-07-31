@@ -1,18 +1,11 @@
-import { Readable } from 'node:stream';
-import play, { validate as validateStreamUrl, YouTubeVideo } from 'play-dl';
+import { Readable } from 'node:stream'
+import play, { validate as validateStreamUrl, YouTubeVideo } from 'play-dl'
 
-import { BotError, ERRORS } from '@/shared/errors';
+import { BotError, ERRORS } from '@/shared/errors'
 
-import {
-  ResultAudioSearch,
-  SerachOptionsParams,
-  SourceStream,
-} from '../source-stream';
-import { playDlStrategies } from './strategies/strategy';
-
-const youtubeStreamTypes = ['yt_video', 'yt_playlist'];
-const spotifyStreamTypes = ['sp_track', 'sp_playlist'];
-const validStreamTypes = [...youtubeStreamTypes, ...spotifyStreamTypes];
+import { ResultAudioSearch, SerachOptionsParams, SourceStream } from '../source-stream'
+import { isValidStreamType, refreshAuthToken } from './auth'
+import { playDlStrategies } from './strategies/strategy'
 
 export class PlayDlSourceStream implements SourceStream {
   streamType = 'sp_track';
@@ -69,9 +62,7 @@ export class PlayDlSourceStream implements SourceStream {
 
       if (!validUrl) throw new Error(ERRORS.INVALID_URL);
 
-      if (spotifyStreamTypes.includes(this.streamType) && play.is_expired()) {
-        await play.refreshToken();
-      }
+      await refreshAuthToken(this.streamType);
 
       const Strategy = playDlStrategies[this.streamType];
 
@@ -86,6 +77,6 @@ export class PlayDlSourceStream implements SourceStream {
 
     if (Boolean(this.streamType) === false) return false;
 
-    return validStreamTypes.includes(this.streamType);
+    return isValidStreamType(this.streamType);
   }
 }
