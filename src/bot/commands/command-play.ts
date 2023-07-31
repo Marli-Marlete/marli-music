@@ -7,6 +7,7 @@ import { BOT_MESSAGES } from '../containts/default-messages';
 import { MarliMusic } from '../marli-music';
 import { Command } from './command';
 import { PlayHook } from './hooks/command-play-hook';
+import { ListQueue } from './command-list-queue';
 
 export class Play extends Command {
   constructor(bot: MarliMusic) {
@@ -62,8 +63,9 @@ export class Play extends Command {
 
         replyContent = `${message.author.username} ${BOT_MESSAGES.CURRENT_PLAYING} ${firstSong.title} - ${firstSong.artist}`;
       }
-
       await message.channel.send(replyContent);
+      const listQueue = new ListQueue(this.bot);
+      await listQueue.execute(message);
     } catch (err) {
       await this.sendCommandError(err, message);
     }

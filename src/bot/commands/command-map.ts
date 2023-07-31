@@ -1,3 +1,4 @@
+import { ShowLyrics } from './command-lyrics';
 import { CommandHelp } from './command-help';
 import { ListQueue } from './command-list-queue';
 import { Pause } from './command-pause';
@@ -18,4 +19,5 @@ export const ALL_COMMANDS: Record<string, any> = {
   queue: ListQueue,
   help: CommandHelp,
   shuffle: Shuffle,
+  lyrics: ShowLyrics,
 };

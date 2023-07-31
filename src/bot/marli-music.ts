@@ -10,6 +10,7 @@ import { AudioPlayer } from '@discordjs/voice';
 import { ALL_COMMANDS, Command } from './commands';
 import { CommandHelp } from './commands/command-help';
 import { BOT_MESSAGES } from './containts/default-messages';
+import { SourceLyrics } from '@/sources/source-lyrics';
 
 export interface BotInfo {
   prefix: string;
@@ -24,6 +25,7 @@ export class MarliMusic extends Client {
   constructor(
     private botInfo: BotInfo,
     public sourceStream: SourceStream,
+    public sourceLyrics: SourceLyrics,
     public queue: Queue,
     options?: ClientOptions
   ) {
