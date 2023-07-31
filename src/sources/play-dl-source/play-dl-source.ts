@@ -8,11 +8,8 @@ import {
   SerachOptionsParams,
   SourceStream,
 } from '../source-stream';
+import { isValidStreamType, refreshAuthToken } from './auth';
 import { playDlStrategies } from './strategies/strategy';
-
-const youtubeStreamTypes = ['yt_video'];
-const spotifyStreamTypes = ['sp_track', 'sp_playlist'];
-const validStreamTypes = [...youtubeStreamTypes, ...spotifyStreamTypes];
 
 export class PlayDlSourceStream implements SourceStream {
   streamType = 'sp_track';
@@ -72,9 +69,7 @@ export class PlayDlSourceStream implements SourceStream {
 
       if (!validUrl) throw new Error(ERRORS.INVALID_URL);
 
-      if (spotifyStreamTypes.includes(this.streamType) && play.is_expired()) {
-        await play.refreshToken();
-      }
+      await refreshAuthToken(this.streamType);
 
       const Strategy = playDlStrategies[this.streamType];
 
@@ -89,6 +84,6 @@ export class PlayDlSourceStream implements SourceStream {
 
     if (Boolean(this.streamType) === false) return false;
 
-    return validStreamTypes.includes(this.streamType);
+    return isValidStreamType(this.streamType);
   }
 }
