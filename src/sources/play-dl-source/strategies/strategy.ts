@@ -1,10 +1,15 @@
-import { StreamInfo } from '@/sources/source-stream'
+import { StreamInfo } from '@/sources/source-stream';
 
-import { PlayDlSourceStream } from '../play-dl-source'
+import { PlayDlSourceStream } from '../play-dl-source';
 import {
-    SpotifyAlbumStrategy, SpotifyPlaylistStrategy, SpotifyTrackStrategy
-} from './spotify-strategy'
-import { YouTubePlaylistStrategy, YouTubeVideoStrategy } from './youtube-strategy'
+  SpotifyAlbumStrategy,
+  SpotifyPlaylistStrategy,
+  SpotifyTrackStrategy,
+} from './spotify-strategy';
+import {
+  YouTubePlaylistStrategy,
+  YouTubeVideoStrategy,
+} from './youtube-strategy';
 
 export interface StrategyConstructor {
   new (playDl: PlayDlSourceStream): IStrategy;

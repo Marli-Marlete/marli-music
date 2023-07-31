@@ -1,11 +1,15 @@
-import { Readable } from 'node:stream'
-import play, { validate as validateStreamUrl, YouTubeVideo } from 'play-dl'
+import { Readable } from 'node:stream';
+import play, { validate as validateStreamUrl, YouTubeVideo } from 'play-dl';
 
-import { BotError, ERRORS } from '@/shared/errors'
+import { BotError, ERRORS } from '@/shared/errors';
 
-import { ResultAudioSearch, SerachOptionsParams, SourceStream } from '../source-stream'
-import { isValidStreamType, refreshAuthToken } from './auth'
-import { playDlStrategies } from './strategies/strategy'
+import {
+  ResultAudioSearch,
+  SerachOptionsParams,
+  SourceStream,
+} from '../source-stream';
+import { isValidStreamType, refreshAuthToken } from './auth';
+import { playDlStrategies } from './strategies/strategy';
 
 export class PlayDlSourceStream implements SourceStream {
   streamType = 'sp_track';
