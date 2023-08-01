@@ -1,7 +1,7 @@
 import play from 'play-dl';
 
 const STREAM_TYPES = {
-  youtube: ['yt_video'],
+  youtube: ['yt_video', 'yt_playlist'],
   spotify: ['sp_track', 'sp_playlist', 'sp_album'],
 };
 
