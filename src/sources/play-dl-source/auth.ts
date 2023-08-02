@@ -1,4 +1,4 @@
-import play from 'play-dl'
+import play from 'play-dl';
 
 const STREAM_TYPES = {
   youtube: ['yt_video', 'yt_playlist'],

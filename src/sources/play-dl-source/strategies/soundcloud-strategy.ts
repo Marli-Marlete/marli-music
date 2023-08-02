@@ -1,9 +1,9 @@
-import play, { SoundCloudPlaylist, SoundCloudTrack } from 'play-dl'
+import play, { SoundCloudPlaylist, SoundCloudTrack } from 'play-dl';
 
-import { StreamInfo } from '@/sources/source-stream'
+import { StreamInfo } from '@/sources/source-stream';
 
-import { PlayDlSourceStream } from '../play-dl-source'
-import { IStrategy } from './strategy'
+import { PlayDlSourceStream } from '../play-dl-source';
+import { IStrategy } from './strategy';
 
 export class SoundCloudTrackStrategy implements IStrategy {
   constructor(private playDlSourceStream: PlayDlSourceStream) {}
@@ -27,12 +27,12 @@ export class SoundCloudTrackStrategy implements IStrategy {
         title: soundCloudInfo.name,
         url: searched.url,
         artist: soundCloudInfo.user.name,
-        source:{
-          url: soundCloudInfo.url
+        source: {
+          url: soundCloudInfo.url,
         },
         thumbnail: {
-          url: soundCloudInfo.thumbnail
-        }
+          url: soundCloudInfo.thumbnail,
+        },
       },
     ];
   }
@@ -48,12 +48,12 @@ export class SoundCloudPlaylistStrategy implements IStrategy {
       title: track.name,
       url: undefined,
       artist: track?.user.name,
-      source:{
-        url: track.url
+      source: {
+        url: track.url,
       },
       thumbnail: {
-        url: track.thumbnail
-      }
+        url: track.thumbnail,
+      },
     }));
 
     return soundcloudTracks;
