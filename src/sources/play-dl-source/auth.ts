@@ -1,4 +1,4 @@
-import play from 'play-dl';
+import play from 'play-dl'
 
 const STREAM_TYPES = {
   youtube: ['yt_video', 'yt_playlist'],
@@ -7,8 +7,9 @@ const STREAM_TYPES = {
 };
 
 function isValidStreamType(streamType: string) {
-  return [...STREAM_TYPES.spotify, ...STREAM_TYPES.youtube].includes(
-    streamType
+  return Object.values(STREAM_TYPES).reduce(
+    (acc, currentArray) => acc || currentArray.includes(streamType),
+    false
   );
 }
 
@@ -16,25 +17,11 @@ function isValidSpotifyStreamType(streamType: string) {
   return STREAM_TYPES.spotify.includes(streamType);
 }
 
-function isValidSoundCloudStreamType(streamType: string) {
-  return STREAM_TYPES.soundcloud.includes(streamType);
-}
-
 async function refreshAuthToken(streamType: string) {
   if (isValidSpotifyStreamType(streamType) && play.is_expired()) {
     await play.refreshToken();
 
     return;
-  }
-
-  if (isValidSoundCloudStreamType) {
-    const clientId = await play.getFreeClientID();
-
-    play.setToken({
-      soundcloud: {
-        client_id: clientId,
-      },
-    });
   }
 }
 
