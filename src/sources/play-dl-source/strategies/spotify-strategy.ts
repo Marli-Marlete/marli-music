@@ -24,7 +24,13 @@ export class SpotifyTrackStrategy implements IStrategy {
       {
         title: spotifyInfo.name,
         url: searched.url,
-        artist: spotifyInfo?.artists.shift().name,
+        source: {
+          url: spotifyInfo.url,
+        },
+        artist: spotifyInfo?.artists.shift()?.name ?? searched.artist,
+        thumbnail: {
+          url: spotifyInfo.thumbnail.url,
+        },
       },
     ];
   }

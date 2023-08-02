@@ -1,3 +1,5 @@
+import { APIEmbed } from 'discord.js';
+
 export function shuffleArray<T>(array: Array<T>): T[] {
   let currentIndex = array.length;
   let randomIndex: number;
@@ -45,4 +47,33 @@ export function fragmentContent(
   }
 
   return result;
+}
+
+export function createEmbedMessage(embed: APIEmbed): APIEmbed {
+  const replyEmbed = {
+    url: embed?.url,
+    title: embed.title,
+    description: embed?.description,
+    color: embed.color ?? 0x00ffff,
+    image: {
+      url: embed?.image?.url,
+      width: 0,
+      height: 0,
+    },
+    thumbnail: {
+      url: embed?.thumbnail?.url,
+      width: 0,
+      height: 0,
+    },
+    author: {
+      name: embed?.author.name,
+      url: embed?.author?.url,
+      icon_url: embed?.author?.icon_url,
+    },
+    footer: {
+      text: `adicionado por ${embed.footer.text}`,
+    },
+  };
+
+  return replyEmbed;
 }

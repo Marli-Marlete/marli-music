@@ -45,7 +45,10 @@ export class PlayDlSourceStream implements SourceStream {
         id: video.id,
         title: video.title,
         url: video.url,
-        artist: video.channel?.name || video?.music.shift()?.artist,
+        artist: video.channel?.name ?? video?.music.shift()?.artist.toString(),
+        thumbnail: {
+          url: video.thumbnails.shift()?.url,
+        },
       }));
 
       if (options?.limit === 1) {
