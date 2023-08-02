@@ -1,18 +1,24 @@
-import { Readable } from 'node:stream';
-import play, { validate as validateStreamUrl, YouTubeVideo } from 'play-dl';
+import { Readable } from 'node:stream'
+import play, { validate as validateStreamUrl, YouTubeVideo } from 'play-dl'
 
-import { BotError, ERRORS } from '@/shared/errors';
+import { BotError, ERRORS } from '@/shared/errors'
 
-import {
-  ResultAudioSearch,
-  SerachOptionsParams,
-  SourceStream,
-} from '../source-stream';
-import { isValidStreamType, refreshAuthToken } from './auth';
-import { playDlStrategies } from './strategies/strategy';
+import { ResultAudioSearch, SerachOptionsParams, SourceStream } from '../source-stream'
+import { isValidStreamType, refreshAuthToken } from './auth'
+import { playDlStrategies } from './strategies/strategy'
 
 export class PlayDlSourceStream implements SourceStream {
   streamType = 'sp_track';
+
+  constructor() {
+    play.getFreeClientID().then(client_id => {
+      play.setToken({
+        soundcloud: {
+          client_id,
+        },
+      });
+    });
+  }
 
   async getStream(input: string): Promise<Readable> {
     try {
@@ -80,7 +86,9 @@ export class PlayDlSourceStream implements SourceStream {
   }
 
   async validate(input: string): Promise<boolean> {
-    this.streamType = String(await validateStreamUrl(input));
+    const validatedStreamUrl = await validateStreamUrl(input) as string
+
+    this.streamType = validatedStreamUrl;
 
     if (Boolean(this.streamType) === false) return false;
 
