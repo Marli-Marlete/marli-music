@@ -14,6 +14,16 @@ import { playDlStrategies } from './strategies/strategy';
 export class PlayDlSourceStream implements SourceStream {
   streamType = 'sp_track';
 
+  constructor() {
+    play.getFreeClientID().then((client_id) => {
+      play.setToken({
+        soundcloud: {
+          client_id,
+        },
+      });
+    });
+  }
+
   async getStream(input: string): Promise<Readable> {
     try {
       const result = await play.stream(input, {
@@ -80,7 +90,9 @@ export class PlayDlSourceStream implements SourceStream {
   }
 
   async validate(input: string): Promise<boolean> {
-    this.streamType = String(await validateStreamUrl(input));
+    const validatedStreamUrl = (await validateStreamUrl(input)) as string;
+
+    this.streamType = validatedStreamUrl;
 
     if (Boolean(this.streamType) === false) return false;
 

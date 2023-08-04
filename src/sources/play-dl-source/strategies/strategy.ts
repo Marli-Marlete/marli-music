@@ -2,6 +2,10 @@ import { StreamInfo } from '@/sources/source-stream';
 
 import { PlayDlSourceStream } from '../play-dl-source';
 import {
+  SoundCloudPlaylistStrategy,
+  SoundCloudTrackStrategy,
+} from './soundcloud-strategy';
+import {
   SpotifyAlbumStrategy,
   SpotifyPlaylistStrategy,
   SpotifyTrackStrategy,
@@ -25,4 +29,6 @@ export const playDlStrategies = {
   yt_video: YouTubeVideoStrategy,
   yt_playlist: YouTubePlaylistStrategy,
   sp_album: SpotifyAlbumStrategy,
+  so_track: SoundCloudTrackStrategy,
+  so_playlist: SoundCloudPlaylistStrategy,
 };
