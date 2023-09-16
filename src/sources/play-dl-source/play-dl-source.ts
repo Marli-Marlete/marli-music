@@ -1,6 +1,7 @@
 import { Readable } from 'node:stream';
 import play, { validate as validateStreamUrl, YouTubeVideo } from 'play-dl';
 
+import { sanitizeUrl } from '@/helpers/helpers';
 import { BotError, ERRORS } from '@/shared/errors';
 
 import {
@@ -83,18 +84,16 @@ export class PlayDlSourceStream implements SourceStream {
 
       const Strategy = playDlStrategies[this.streamType];
 
-      const regex = /intl-[a-zA-Z]{2}\//;
-
-      const modifiedUrl = url.replace(regex, "");
-      
-      return new Strategy(this).getStreamInfo(modifiedUrl);
+      return new Strategy(this).getStreamInfo(url);
     } catch (e) {
       throw new BotError(e.stack || e.message, ERRORS.RESULT_NOT_FOUND);
     }
   }
 
   async validate(input: string): Promise<boolean> {
-    const validatedStreamUrl = (await validateStreamUrl(input)) as string;
+    const validatedStreamUrl = (await validateStreamUrl(
+      sanitizeUrl(input)
+    )) as string;
 
     this.streamType = validatedStreamUrl;
 
