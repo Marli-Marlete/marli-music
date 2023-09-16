@@ -77,3 +77,11 @@ export function createEmbedMessage(embed: APIEmbed): APIEmbed {
 
   return replyEmbed;
 }
+
+export function sanitizeUrl(url: string) {
+  const regex = /intl-[a-zA-Z]{2}\//;
+
+  const modifiedUrl = url.trim().replace(regex, '');
+
+  return modifiedUrl;
+}
