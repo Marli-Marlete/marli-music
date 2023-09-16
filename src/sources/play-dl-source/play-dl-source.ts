@@ -1,6 +1,7 @@
 import { Readable } from 'node:stream';
 import play, { validate as validateStreamUrl, YouTubeVideo } from 'play-dl';
 
+import { sanitizeUrl } from '@/helpers/helpers';
 import { BotError, ERRORS } from '@/shared/errors';
 
 import {
@@ -90,7 +91,9 @@ export class PlayDlSourceStream implements SourceStream {
   }
 
   async validate(input: string): Promise<boolean> {
-    const validatedStreamUrl = (await validateStreamUrl(input)) as string;
+    const validatedStreamUrl = (await validateStreamUrl(
+      sanitizeUrl(input)
+    )) as string;
 
     this.streamType = validatedStreamUrl;
 
