@@ -83,7 +83,11 @@ export class PlayDlSourceStream implements SourceStream {
 
       const Strategy = playDlStrategies[this.streamType];
 
-      return new Strategy(this).getStreamInfo(url);
+      const regex = /intl-[a-zA-Z]{2}\//;
+
+      const modifiedUrl = url.replace(regex, "");
+      
+      return new Strategy(this).getStreamInfo(modifiedUrl);
     } catch (e) {
       throw new BotError(e.stack || e.message, ERRORS.RESULT_NOT_FOUND);
     }
