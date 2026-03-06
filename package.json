@@ -12,7 +12,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx .",
     "format": "prettier --config .prettierrc './**/*.ts' --write",
-    "lit:format": "concurrently \"yarn run format\" \"yarn run lint:fix\"",
+    "lint:format": "concurrently \"yarn run format\" \"yarn run lint:fix\"",
     "test": "vitest",
     "coverage": "vitest --coverage",
     "coverage:web": "http-server -o -p 3333 ./coverage",

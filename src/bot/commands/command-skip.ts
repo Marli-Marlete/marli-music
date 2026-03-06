@@ -1,5 +1,7 @@
 import { Message } from 'discord.js';
 
+import { createEmbedMessage } from '@/helpers/helpers';
+
 import { BOT_MESSAGES } from '../containts/default-messages';
 import { MarliMusic } from '../marli-music';
 import { Command } from './command';
@@ -29,9 +31,27 @@ export class Skip extends Command {
 
         const audioResource = await this.getAudioResource(next.streamInfo.url);
 
-        await message.reply(
-          `${BOT_MESSAGES.MUSIC_SKIPPED} ${next.streamInfo.title} - ${next.streamInfo.artist}`
-        );
+        const embedMessage = createEmbedMessage({
+          url: next.streamInfo?.source?.url ?? next.streamInfo.url,
+          author: {
+            name: next.streamInfo.artist,
+            url: next.streamInfo.url,
+            icon_url: next.streamInfo?.thumbnail?.url,
+          },
+          title: next.streamInfo.title,
+          footer: {
+            text: message.author.username,
+          },
+          thumbnail: {
+            url: next.streamInfo?.thumbnail?.url,
+          },
+        });
+
+        await message.channel.send({
+          content: BOT_MESSAGES.MUSIC_SKIPPED,
+          embeds: [embedMessage],
+        });
+
         player.play(audioResource);
         queue.pop(connectionID);
       } else {

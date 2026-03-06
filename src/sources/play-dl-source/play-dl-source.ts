@@ -1,6 +1,7 @@
 import { Readable } from 'node:stream';
 import play, { validate as validateStreamUrl, YouTubeVideo } from 'play-dl';
 
+import { sanitizeUrl } from '@/helpers/helpers';
 import { BotError, ERRORS } from '@/shared/errors';
 
 import {
@@ -8,14 +9,21 @@ import {
   SerachOptionsParams,
   SourceStream,
 } from '../source-stream';
+import { isValidStreamType, refreshAuthToken } from './auth';
 import { playDlStrategies } from './strategies/strategy';
-
-const youtubeStreamTypes = ['yt_video'];
-const spotifyStreamTypes = ['sp_track', 'sp_playlist'];
-const validStreamTypes = [...youtubeStreamTypes, ...spotifyStreamTypes];
 
 export class PlayDlSourceStream implements SourceStream {
   streamType = 'sp_track';
+
+  constructor() {
+    play.getFreeClientID().then((client_id) => {
+      play.setToken({
+        soundcloud: {
+          client_id,
+        },
+      });
+    });
+  }
 
   async getStream(input: string): Promise<Readable> {
     try {
@@ -48,7 +56,10 @@ export class PlayDlSourceStream implements SourceStream {
         id: video.id,
         title: video.title,
         url: video.url,
-        artist: video.channel?.name || video?.music.shift()?.artist,
+        artist: video.channel?.name ?? video?.music.shift()?.artist.toString(),
+        thumbnail: {
+          url: video.thumbnails.shift()?.url,
+        },
       }));
 
       if (options?.limit === 1) {
@@ -69,9 +80,7 @@ export class PlayDlSourceStream implements SourceStream {
 
       if (!validUrl) throw new Error(ERRORS.INVALID_URL);
 
-      if (spotifyStreamTypes.includes(this.streamType) && play.is_expired()) {
-        await play.refreshToken();
-      }
+      await refreshAuthToken(this.streamType);
 
       const Strategy = playDlStrategies[this.streamType];
 
@@ -82,10 +91,14 @@ export class PlayDlSourceStream implements SourceStream {
   }
 
   async validate(input: string): Promise<boolean> {
-    this.streamType = String(await validateStreamUrl(input));
+    const validatedStreamUrl = (await validateStreamUrl(
+      sanitizeUrl(input)
+    )) as string;
+
+    this.streamType = validatedStreamUrl;
 
     if (Boolean(this.streamType) === false) return false;
 
-    return validStreamTypes.includes(this.streamType);
+    return isValidStreamType(this.streamType);
   }
 }
