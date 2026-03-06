@@ -8,6 +8,7 @@ import { BOT_MESSAGES } from '../containts/default-messages';
 import { MarliMusic } from '../marli-music';
 import { Command } from './command';
 import { PlayHook } from './hooks/command-play-hook';
+import { ListQueue } from './command-list-queue';
 
 export class Play extends Command {
   constructor(bot: MarliMusic) {
@@ -84,6 +85,9 @@ export class Play extends Command {
         content: replyContent,
         embeds: [embedMessage],
       });
+      
+      const listQueue = new ListQueue(this.bot);
+      await listQueue.execute(message);
     } catch (err) {
       await this.sendCommandError(err, message);
     }

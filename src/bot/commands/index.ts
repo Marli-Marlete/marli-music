@@ -9,3 +9,4 @@ export { Command } from './command';
 export { ListQueue } from './command-list-queue';
 export { CommandHelp } from './command-help';
 export { Shuffle } from './command-shuffle';
+export { ShowLyrics } from './command-lyrics';
